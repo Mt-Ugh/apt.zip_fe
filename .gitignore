@@ -1,0 +1,120 @@
+# ========= 기본 Node.js 설정 =========
+node_modules/
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+report.*.json
+
+# Runtime
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 빌드 결과물
+dist/
+dist-ssr/
+build/
+coverage/
+.nyc_output/
+*.tgz
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# 캐시 / 번들러
+.cache/
+.parcel-cache/
+.webpack/
+.rpt2_cache/
+.rts2_cache_*/
+.svelte-kit/
+.temp/
+output/
+.vuepress/dist
+.nuxt/
+.next/
+out/
+.docusaurus/
+
+# 테스트 및 스크린샷
+cypress/videos/
+cypress/screenshots/
+test/
+test-results/
+
+# TypeScript
+*.tsbuildinfo
+
+# 환경 설정 및 민감 정보
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.secret
+
+# ========= 에디터 관련 =========
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.history/
+*.vsix
+
+# ========= macOS / Windows =========
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon?
+.Trashes
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.DocumentRevisions-V100
+.apdisk
+Network Trash Folder
+Temporary Items
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+*.stackdump
+
+# ========= 기타 툴 =========
+bower_components/
+jspm_packages/
+lib-cov/
+.grunt/
+.lock-wscript
+.web_modules/
+.serverless/
+.fusebox/
+.dynamodb/
+.idea_modules/
+.idea/replstate.xml
+.idea/**/httpRequests
+.idea/**/sonarlint/
+.idea/**/sonarIssues.xml
+.idea/**/markdown-navigator*
+.idea/**/azureSettings.xml
+.idea/**/aws.xml
+.idea/$CACHE_FILE$
