@@ -1,9 +1,18 @@
 <template>
   <div id="app">
+    <Header />
     <router-view />
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import Header from '@/components/layout/Header.vue'
+</script>
 
-<style></style>
+<style>
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+</style>
