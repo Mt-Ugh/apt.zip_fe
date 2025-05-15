@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Header />
+    <Home />
     <router-view />
     <Footer />
   </div>
@@ -9,6 +10,7 @@
 <script setup>
 import Header from '@/components/layout/Header.vue'
 import Footer from '@/components/layout/Footer.vue'
+import Home from '@/views/Home/Home.vue'
 </script>
 
 <style>
