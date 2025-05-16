@@ -1,5 +1,6 @@
 import axios from 'axios'
 import camelcaseKeys from 'camelcase-keys'
+import snakecaseKeys from 'snakecase-keys'
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -8,6 +9,17 @@ const instance = axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+instance.interceptors.request.use(
+  (config) => {
+    if (config.data && typeof config.data === 'object') {
+      // snakeCase로 변환
+      config.data = snakecaseKeys(config.data, { deep: true })
+    }
+    return config
+  },
+  (error) => Promise.reject(error),
+)
 
 instance.interceptors.response.use(
   (res) => {
