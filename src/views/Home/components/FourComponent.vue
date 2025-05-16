@@ -1,6 +1,6 @@
 <template>
   <swiper
-    ref="mySwiper"
+    ref="swiperRef"
     :effect="'coverflow'"
     :grabCursor="true"
     :centeredSlides="true"
@@ -22,10 +22,10 @@
       class="slide-container"
     >
       <div class="image-container">
-        <img :src="slide.image" alt="nature image" class="swiper-image" />
+        <img :src="slide.areaUrl" alt="nature image" class="swiper-image" />
         <!-- 별 아이콘 -->
         <div class="star-rating" @click="confirmFavorite(slide)">
-          <span :class="{'star-filled': slide.favorite, 'star': !slide.favorite}">★</span>
+          <span :class="{ 'star-filled': slide.isInterest, star: !slide.isInterest }">★</span>
         </div>
       </div>
       <div class="text-container">
@@ -35,63 +35,37 @@
   </swiper>
 </template>
 
-<script>
-  // Import Swiper Vue.js components
-  import { Swiper, SwiperSlide } from 'swiper/vue';
+<script setup>
+import { ref , onMounted} from 'vue'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+import 'swiper/css/effect-coverflow'
+import 'swiper/css/pagination'
+import { EffectCoverflow, Pagination } from 'swiper/modules'
+import { fameAreaList , registerInterestArea } from '@/api/InterestArea'
 
-  // Import Swiper styles
-  import 'swiper/css';
-  import 'swiper/css/effect-coverflow';
-  import 'swiper/css/pagination';
 
-  // import required modules
-  import { EffectCoverflow, Pagination } from 'swiper/modules';
-  import { ref } from 'vue';
+// 슬라이드 데이터 reactive 변수로 선언
+const slides = ref([])
 
-  export default {
-    components: {
-      Swiper,
-      SwiperSlide,
-    },
-    setup() {
-      // 슬라이드 데이터
-      const slides = ref([
-        { image: 'https://swiperjs.com/demos/images/nature-1.jpg', name: '서울', favorite: false },
-        { image: 'https://swiperjs.com/demos/images/nature-2.jpg', name: '부산', favorite: false },
-        { image: 'https://swiperjs.com/demos/images/nature-3.jpg', name: '울산', favorite: false },
-        { image: 'https://swiperjs.com/demos/images/nature-4.jpg', name: '대구', favorite: false },
-        { image: 'https://swiperjs.com/demos/images/nature-5.jpg', name: '대전', favorite: false },
-        { image: 'https://swiperjs.com/demos/images/nature-6.jpg', name: '제주', favorite: false },
-        { image: 'https://swiperjs.com/demos/images/nature-7.jpg', name: '인천', favorite: false },
-        { image: 'https://swiperjs.com/demos/images/nature-8.jpg', name: '광주', favorite: false },
-      ]);
+const swiperRef = ref(null)
+const modules = [EffectCoverflow, Pagination]
 
-      // Swiper 슬라이드 참조
-      const swiperRef = ref(null);
+onMounted(async () => {
+  slides.value = await fameAreaList()
+})
 
-      // 관심 등록 여부를 확인하는 함수
-      const confirmFavorite = (slide) => {
-        const message = slide.favorite ? "관심을 해제하시겠습니까?" : "관심을 등록하시겠습니까?";
 
-        // confirm() 메시지를 띄운 후 OK 클릭 시
-        if (confirm(message)) {
-          // 상태 변경
-          slide.favorite = !slide.favorite;
-          console.log(`${slide.name} 관심 ${slide.favorite ? '등록됨' : '취소됨'}`);
 
-          // 별 표시가 바로 바뀌도록
-          // 상태 변경이 즉시 반영되도록 하기 위해서 Vue의 reactivity를 활용
-        }
-      };
+// 관심 등록 여부를 토글하는 함수
+function confirmFavorite(slide) {
+  const message = slide.favorite? '관심을 해제하시겠습니까?' : '관심을 등록하시겠습니까?'
 
-      return {
-        slides,
-        confirmFavorite,
-        modules: [EffectCoverflow, Pagination],
-        swiperRef
-      };
-    },
-  };
+  if (confirm(message)) {
+    slide.favorite = !slide.favorite
+    console.log(`${slide.name} 관심 ${slide.favorite ? '등록됨' : '취소됨'}`)
+  }
+}
 </script>
 
 <style scoped>
@@ -111,7 +85,17 @@
 .swiper-slide img {
   display: block;
   width: 100%;
+  min-height: 250px ;
 }
+
+@media screen and (max-width: 700px) {
+  .swiper-slide img {
+    display: block;
+    width: 100%;
+    min-height: 150px ;
+  }
+}
+
 
 .slide-container {
   margin-bottom: 70px;
