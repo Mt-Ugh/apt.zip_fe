@@ -46,10 +46,10 @@
           >
             <a href="#" @click.prevent="hideForms"><i class="material-icons">&#xE5C4;</i></a>
             <h2>SIGN IN</h2>
-            <input type="email" placeholder="Email" v-model="email" required />
-            <input type="password" placeholder="Password" v-model="password" required />
+            <input type="email" placeholder="Email" v-model="signinEmail" required />
+            <input type="password" placeholder="Password" v-model="signinPassword" required />
             <button class="btn_signin" type="submit">SIGN IN</button>
-            <button class="btn_social_login" type="button">
+            <button class="btn_social_login" type="button" @click="handleGoogleLogin">
               <img src="/google_signin.svg" alt="Google 로그인 버튼" />
             </button>
           </form>
@@ -62,35 +62,41 @@
           >
             <a href="#" @click.prevent="hideForms"><i class="material-icons">&#xE5C4;</i></a>
             <h2>SIGN UP</h2>
-            <input type="email" placeholder="Email" v-model="email" required />
+            <input type="email" placeholder="Email" v-model="signupEmail" required />
             <input type="text" placeholder="Name" v-model="name" required />
             <input type="text" placeholder="Nickname" v-model="nickname" required />
             <input type="text" placeholder="Phone Number" v-model="phoneNumber" required />
-            <input type="password" placeholder="Password" v-model="password" required />
+            <input type="password" placeholder="Password" v-model="signupPassword" required />
             <input
               type="password"
               placeholder="Confirm Password"
               v-model="confirmPassword"
               required
             />
-
             <p v-if="passwordMismatch" style="color: red; font-size: 13px; margin-top: 5px">
               비밀번호가 일치하지 않습니다.
             </p>
-
             <button class="btn_sign_up" type="submit">SIGN UP</button>
           </form>
         </div>
       </div>
     </div>
   </div>
+
+  <CommonModal
+    :visible="showModal"
+    :title="modalTitle"
+    :message="modalMessage"
+    @close="showModal = false"
+  />
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { signin, signup } from '@/api/Auth'
+import { signin, signup, getGoogleLoginUrl } from '@/api/Auth'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
+import CommonModal from '@/components/common/CommonModal.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -99,15 +105,28 @@ const formState = ref('')
 const signinOpacity = ref('0')
 const signupOpacity = ref('0')
 
-const email = ref('')
+const signinEmail = ref('')
+const signinPassword = ref('')
+
+const signupEmail = ref('')
 const name = ref('')
 const nickname = ref('')
 const phoneNumber = ref('')
-const password = ref('')
+const signupPassword = ref('')
 const confirmPassword = ref('')
 
+const showModal = ref(false)
+const modalTitle = ref('')
+const modalMessage = ref('')
+
+const showModalError = (title, message) => {
+  modalTitle.value = title
+  modalMessage.value = message
+  showModal.value = true
+}
+
 const passwordMismatch = computed(() => {
-  return confirmPassword.value && password.value !== confirmPassword.value
+  return confirmPassword.value && signupPassword.value !== confirmPassword.value
 })
 
 const formStateClass = computed(() => {
@@ -129,6 +148,16 @@ const changeToSignUp = () => {
 }
 
 const hideForms = () => {
+  signinEmail.value = ''
+  signinPassword.value = ''
+
+  signupEmail.value = ''
+  signupPassword.value = ''
+  name.value = ''
+  nickname.value = ''
+  phoneNumber.value = ''
+  confirmPassword.value = ''
+
   formState.value = ''
   signinOpacity.value = '0'
   signupOpacity.value = '0'
@@ -136,26 +165,47 @@ const hideForms = () => {
 
 const handleSignin = async () => {
   try {
-    const res = await signin(email.value, password.value)
+    const res = await signin(signinEmail.value, signinPassword.value)
     userStore.setUser(res)
     router.push('/')
   } catch (err) {
-    alert('로그인 실패')
+    if (err.response?.status === 400) {
+      showModalError(
+        '로그인 실패',
+        err.response?.data?.message || '아이디 또는 비밀번호가 틀렸습니다.',
+      )
+    } else {
+      showModalError('로그인 실패', '오류 발생')
+    }
   }
+}
+
+const handleGoogleLogin = async () => {
+  window.location.href = getGoogleLoginUrl()
 }
 
 const handleSignup = async () => {
   if (passwordMismatch.value) {
-    alert('비밀번호가 일치하지 않습니다.')
+    showModalError('회원가입 실패', '비밀번호가 일치하지 않습니다.')
     return
   }
 
   try {
-    await signup(email.value, password.value, name.value, nickname.value, phoneNumber.value)
-    alert('회원가입 성공!')
-    router.push('/auth')
+    await signup(
+      signupEmail.value,
+      signupPassword.value,
+      name.value,
+      nickname.value,
+      phoneNumber.value,
+    )
+    showModalError('회원가입 성공', '로그인 후 사용해주세요.')
+    hideForms()
   } catch (err) {
-    alert('회원가입 실패: ' + (err.response?.data?.message || err.message))
+    if (err.response?.status === 409) {
+      showModalError('회원가입 실패', '이미 존재하는 사용자입니다.')
+    } else {
+      showModalError('회원가입 실패', err.response?.data?.message || err.message)
+    }
   }
 }
 </script>
