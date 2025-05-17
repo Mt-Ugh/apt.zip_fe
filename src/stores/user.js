@@ -24,6 +24,10 @@ export const useUserStore = defineStore('user', {
         }),
       )
     },
+    setAccessToken(accessToken) {
+      this.accessToken = accessToken
+      localStorage.setItem('accessToken', accessToken)
+    },
     initUserFromStorage() {
       this.accessToken = localStorage.getItem('accessToken') || ''
       const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
