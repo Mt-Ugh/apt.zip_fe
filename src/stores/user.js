@@ -7,6 +7,9 @@ export const useUserStore = defineStore('user', {
     nickname: '',
     profileUrl: '',
   }),
+  getters: {
+    isLoggedIn: (state) => !!state.accessToken,
+  },
   actions: {
     setUser(data) {
       this.accessToken = data.accessToken
