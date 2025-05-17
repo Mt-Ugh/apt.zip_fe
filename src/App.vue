@@ -7,8 +7,16 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
 import Header from '@/components/layout/Header.vue'
 import Footer from '@/components/layout/Footer.vue'
+
+const userStore = useUserStore()
+
+onMounted(() => {
+  userStore.initUserFromStorage()
+})
 </script>
 
 <style>

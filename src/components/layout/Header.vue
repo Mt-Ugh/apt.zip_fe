@@ -10,13 +10,18 @@
 
   <nav id="menu" :class="{ visible: isMenuVisible }">
     <ul class="links">
-      <li><RouterLink to="/">홈</RouterLink></li>
-      <li><RouterLink to="/about">About Us</RouterLink></li>
-      <li><RouterLink to="/search">실거래 검색</RouterLink></li>
-      <li><RouterLink to="/news">부동산 뉴스</RouterLink></li>
-      <li><RouterLink to="/qna">QnA</RouterLink></li>
-      <li><RouterLink to="/mypage">MyPage</RouterLink></li>
-      <li><RouterLink to="/login">로그인</RouterLink></li>
+      <li><RouterLink to="/" @click="toggleMenu">홈</RouterLink></li>
+      <li><RouterLink to="/about" @click="toggleMenu">About Us</RouterLink></li>
+      <li><RouterLink to="/search" @click="toggleMenu">실거래 검색</RouterLink></li>
+      <li><RouterLink to="/news" @click="toggleMenu">부동산 뉴스</RouterLink></li>
+      <li><RouterLink to="/qna" @click="toggleMenu">QnA</RouterLink></li>
+      <li><RouterLink to="/mypage" @click="toggleMenu">MyPage</RouterLink></li>
+      <li v-if="userStore.isLoggedIn">
+        <a href="#" @click.prevent="handleLogout">로그아웃</a>
+      </li>
+      <li v-else>
+        <RouterLink to="/auth" @click="toggleMenu">로그인</RouterLink>
+      </li>
     </ul>
     <button class="close" @click="toggleMenu"></button>
   </nav>
@@ -24,6 +29,11 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const userStore = useUserStore()
 
 defineOptions({ name: 'AppHeader' })
 
@@ -31,6 +41,12 @@ const isMenuVisible = ref(false)
 
 const toggleMenu = () => {
   isMenuVisible.value = !isMenuVisible.value
+}
+
+const handleLogout = () => {
+  userStore.logout()
+  toggleMenu()
+  router.push('/')
 }
 </script>
 
