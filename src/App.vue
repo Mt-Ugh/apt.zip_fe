@@ -1,16 +1,19 @@
 <template>
   <div id="app">
-    <Header />
-    <Home />
+    <Header :isHome="isHomePage" />
     <router-view />
     <Footer />
   </div>
 </template>
 
+
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Header from '@/components/layout/Header.vue'
 import Footer from '@/components/layout/Footer.vue'
-import Home from '@/views/Home/Home.vue'
+const route = useRoute()
+const isHomePage = computed(() => route.path === '/')
 </script>
 
 <style>
