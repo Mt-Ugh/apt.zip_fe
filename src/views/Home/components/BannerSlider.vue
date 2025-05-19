@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import SlideButtonL from '@/assets/images/Home/SlideButtonL.png'
 import SlideButtonR from '@/assets/images/Home/SlideButtonR.png'
 import Banner1 from '@/assets/images/Home/Banner1.jpg'
@@ -91,5 +91,9 @@ const changeSlide = (index) => {
 
 onMounted(() => {
   startSlideShow()
+})
+
+onUnmounted(() => {
+  clearInterval(autoSlideInterval)
 })
 </script>

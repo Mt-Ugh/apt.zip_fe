@@ -22,8 +22,3 @@ export const deleteInterestArea = async (areaUuid) => {
     throw new Error('삭제 실패')
   }
 }
-
-export const NewsList = async () => {
-  const res = await axios.get('/news/list?query=부동산&display=10&start=1')
-  return res.data
-}

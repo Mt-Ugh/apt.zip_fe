@@ -1,5 +1,5 @@
 <template>
-  <section id="four" class="wrapper style2">
+  <section id="fame" class="wrapper style2">
     <div class="inner">
       <header class="align-left"><p>인기 지역</p></header>
 

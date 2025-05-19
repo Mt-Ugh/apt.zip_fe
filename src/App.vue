@@ -23,9 +23,6 @@ onMounted(() => {
 </script>
 
 <style>
-@charset "UTF-8";
-@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 html,
 body {
   margin: 0 !important;

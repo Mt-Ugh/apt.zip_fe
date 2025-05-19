@@ -6,7 +6,7 @@
         <div v-for="(news, index) in displayedBoxes" :key="index">
           <div class="box">
             <div class="image fit">
-              <img :src="news.thumbnail" alt="" width="600" height="300" />
+              <img :src="news.thumbnail" alt="News thumbnail" width="600" height="300" />
             </div>
             <div class="content">
               <header class="align-center">
@@ -28,16 +28,16 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { NewsList } from '@/api/InterestArea'
-const realEstatenews = ref([])
+import { NewsList } from '@/api/News'
+const realEstateNews = ref([])
 
 const currentBoxIndex = ref(0)
 const displayedBoxes = computed(() =>
-  realEstatenews.value.slice(currentBoxIndex.value, currentBoxIndex.value + 2),
+  realEstateNews.value.slice(currentBoxIndex.value, currentBoxIndex.value + 2),
 )
 
 const changeBoxes = (direction) => {
-  const total = realEstatenews.value.length
+  const total = realEstateNews.value.length
   let newIndex = currentBoxIndex.value + direction
 
   if (newIndex < 0) {
@@ -52,7 +52,12 @@ const changeBoxes = (direction) => {
 }
 
 onMounted(async () => {
-  realEstatenews.value = await NewsList()
+  realEstateNews.value = await NewsList('부동산', 10, 1)
 })
 </script>
-<style></style>
+<style scoped>
+.image.fit img {
+  object-fit: cover;
+  border-radius: 10px;
+}
+</style>

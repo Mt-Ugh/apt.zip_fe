@@ -2,18 +2,22 @@
   <div id="app" class="home-page">
     <BannerSlider />
     <NewsSection />
-    <TwoSection />
-    <FourSection />
+    <MiddleSection />
+    <FameSection />
   </div>
 </template>
 
 <script setup>
 import BannerSlider from '@/views/Home/components/BannerSlider.vue'
-import NewsSection from '@/views/Home/components/NewSection.vue'
-import TwoSection from '@/views/Home/components/TwoSection.vue'
-import FourSection from '@/views/Home/components/FourComponent.vue'
+import NewsSection from '@/views/Home/components/NewsSection.vue'
+import MiddleSection from '@/views/Home/components/MiddleSection.vue'
+import FameSection from '@/views/Home/components/FameComponent.vue'
 </script>
 <style>
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
 .home-page .image.fit img {
   width: 100%;
   height: 450px;
