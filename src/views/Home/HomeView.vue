@@ -16,7 +16,7 @@ import FourSection from '@/views/Home/components/FourComponent.vue'
 <style>
 .home-page .image.fit img {
   width: 100%;
-  height: auto;
+  height: 450px;
 }
 
 .home-page ol,
@@ -1590,9 +1590,7 @@ import FourSection from '@/views/Home/components/FourComponent.vue'
     margin-left: 8.33333%;
   }
 }
-
-.home-page /* Basic */
-
+/* Basic */
 @-ms-viewport {
   width: device-width;
 }
@@ -1843,7 +1841,7 @@ import FourSection from '@/views/Home/components/FourComponent.vue'
 .home-page .box {
   margin-bottom: 2rem;
   background: #fff;
-  height: 1000px;
+  height: 840px;
   border-color: rgba(144, 144, 144, 0.25);
 }
 
@@ -1911,7 +1909,7 @@ import FourSection from '@/views/Home/components/FourComponent.vue'
 }
 
 .home-page .box img {
-  max-height: 30rem;
+  max-height: 23rem;
 }
 
 /* Button */
@@ -3829,5 +3827,9 @@ body.is-mobile .home-page .banner > article {
 .home-page .banner .prev img:hover,
 .home-page .banner .next img:hover {
   transform: scale(1.4);
+}
+
+.home-page button {
+  line-height: 0rem;
 }
 </style>

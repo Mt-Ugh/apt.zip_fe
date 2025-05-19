@@ -34,6 +34,19 @@
       </swiper>
     </div>
   </section>
+  <CommonModal
+    :visible="showModal"
+    :title="modalTitle"
+    :message="modalMessage"
+    @close="showModal = false"
+  />
+  <ConfirmModal
+    :visible="showConfirmModal"
+    :title="modalTitle"
+    :message="modalMessage"
+    @confirm="onConfirm"
+    @cancel="onCancel"
+  />
 </template>
 
 <script setup>
@@ -44,34 +57,66 @@ import 'swiper/css/effect-coverflow'
 import 'swiper/css/pagination'
 import { EffectCoverflow, Pagination } from 'swiper/modules'
 import { fameAreaList, registerInterestArea, deleteInterestArea } from '@/api/InterestArea'
+import { useUserStore } from '@/stores/user'
+import CommonModal from '@/components/common/CommonModal.vue'
+import ConfirmModal from '@/components/common/ConfirmModal.vue'
 
+const userStore = useUserStore()
 const slides = ref([])
 const swiperRef = ref(null)
 const modules = [EffectCoverflow, Pagination]
+const showModal = ref(false)
+const modalTitle = ref('')
+const modalMessage = ref('')
+const showModalError = (title, message) => {
+  modalTitle.value = title
+  modalMessage.value = message
+  showModal.value = true
+}
+
+const showConfirmModal = ref(false)
+const confirmSlide = ref(null)
 
 onMounted(async () => {
   slides.value = await fameAreaList()
 })
 
-async function confirmFavorite(slide) {
-  const message = slide.isInterest ? '관심을 해제하시겠습니까?' : '관심을 등록하시겠습니까?'
-  if (!confirm(message)) return
+function confirmFavorite(slide) {
+  if (!userStore.isLoggedIn) {
+    showModalError('로그인 실패', '오류 발생')
+    return
+  }
+
+  confirmSlide.value = slide
+  modalTitle.value = slide.isInterest ? '관심 해제 확인' : '관심 등록 확인'
+  modalMessage.value = slide.isInterest ? '관심을 해제하시겠습니까?' : '관심을 등록하시겠습니까?'
+  showConfirmModal.value = true
+}
+
+async function onConfirm() {
+  const slide = confirmSlide.value
+  if (!slide) return
 
   try {
     if (slide.isInterest) {
       await deleteInterestArea(slide.areaUuid)
       slide.isInterest = false
-      alert(`${slide.name} 관심이 해제되었습니다.`)
+      showModalError(`${slide.name} 관심이 해제되었습니다.`)
     } else {
-      // 관심 등록 API 호출
       await registerInterestArea(slide.areaUuid)
       slide.isInterest = true
-      alert(`${slide.name} 관심이 등록되었습니다.`)
+      showModalError(`${slide.name} 관심이 등록되었습니다.`)
     }
   } catch (error) {
-    alert('처리 중 오류가 발생했습니다. 다시 시도해주세요.')
+    showModalError('처리 중 오류가 발생했습니다. 다시 시도해주세요.')
     console.error(error)
+  } finally {
+    showConfirmModal.value = false
   }
+}
+
+function onCancel() {
+  showConfirmModal.value = false
 }
 </script>
 
