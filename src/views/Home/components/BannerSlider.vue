@@ -12,10 +12,10 @@
       </div>
     </article>
     <button class="prev" @click="changeSlide(currentSlide - 1)">
-      <img src="/SlideButtonL.png" alt="Previous" />
+      <img :src="SlideButtonL" alt="Previous" />
     </button>
     <button class="next" @click="changeSlide(currentSlide + 1)">
-      <img src="/SlideButtonR.png" alt="Next" />
+      <img :src="SlideButtonR" alt="Next" />
     </button>
     <ul class="indicators">
       <li
@@ -32,33 +32,40 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import SlideButtonL from '@/assets/images/Home/SlideButtonL.png'
+import SlideButtonR from '@/assets/images/Home/SlideButtonR.png'
+import Banner1 from '@/assets/images/Home/Banner1.jpg'
+import Banner2 from '@/assets/images/Home/Banner2.jpg'
+import Banner3 from '@/assets/images/Home/Banner3.jpg'
+import Banner4 from '@/assets/images/Home/Banner4.webp'
+import Banner5 from '@/assets/images/Home/Banner5.jpg'
 
 const slides = ref([
   {
-    image: 'https://econmingle.com/wp-content/uploads/2025/01/Competition-to-differentiate-construction-companies-7-scaled.jpg',
-    description: 'A free responsive web site template by TEMPLATED',
-    title: 'Hielo'
+    image: Banner1,
+    description: '신뢰받는 실거래가 정보 제공',
+    title: 'Reliable',
   },
   {
-    image: 'https://www.kharn.kr/data/photos/20201250/art_16078615198495_d8b4e6.jpg',
-    description: 'Lorem ipsum dolor sit amet nullam feugiat',
-    title: 'Magna'
+    image: Banner2,
+    description: '지역별 시세 분석',
+    title: 'Analysis',
   },
   {
-    image: 'https://img6.yna.co.kr/etc/inner/KR/2025/05/09/AKR20250509060300003_01_i_P4.jpg',
-    description: 'Sed cursus aliuam veroeros lorem ipsum nullam',
-    title: 'Tempus'
+    image: Banner3,
+    description: '실시간 거래 현황 업데이트',
+    title: 'Live',
   },
   {
-    image: 'https://images.homify.com/v1441045029/p/photo/image/682854/JHA_YNR_201210_023.jpg',
-    description: 'Adipiscing lorem ipsum feugiat sed phasellus consequat',
-    title: 'Etiam'
+    image: Banner4,
+    description: '투자 맞춤형 정보',
+    title: 'Investment',
   },
   {
-    image: 'https://image.fnnews.com/resource/media/image/2024/12/26/202412261201452417_l.jpg',
-    description: 'Ipsum dolor sed magna veroeros lorem ipsum',
-    title: 'Adipiscing'
-  }
+    image: Banner5,
+    description: '쉽고 빠른 시장 이해',
+    title: 'Insights',
+  },
 ])
 
 const currentSlide = ref(0)

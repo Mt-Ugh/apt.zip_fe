@@ -1,12 +1,12 @@
 import axios from './http'
 
 export const fameAreaList = async () => {
-  const res = await axios.get("/interestArea/fame")
+  const res = await axios.get('/interestArea/fame')
   return res.data
 }
 
-export const registerInterestArea = async (area_uuid) => {
-  const res = await axios.post('/interestArea/regist', { area_uuid })
+export const registerInterestArea = async (areaUuid) => {
+  const res = await axios.post('/interestArea/regist', { areaUuid })
   if (res.status === 201) {
     return true
   } else {
@@ -14,8 +14,8 @@ export const registerInterestArea = async (area_uuid) => {
   }
 }
 
-export const deleteInterestArea = async (area_uuid) => {
-  const res = await axios.delete(`/interestArea/delete/${area_uuid}`)
+export const deleteInterestArea = async (areaUuid) => {
+  const res = await axios.delete(`/interestArea/delete/${areaUuid}`)
   if (res.status === 200) {
     return true
   } else {

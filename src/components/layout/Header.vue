@@ -1,5 +1,5 @@
 <template>
- <header id="header" :class="['alt', { 'home-header': isHome }]">
+  <header id="header" :class="['alt', { 'home-header': isHome }]">
     <div class="logo">
       <RouterLink to="/">
         <img src="/APT.ZIP_text.svg" alt="logo" />
@@ -38,7 +38,7 @@ const userStore = useUserStore()
 defineOptions({ name: 'AppHeader' })
 
 defineProps({
-  isHome: Boolean
+  isHome: Boolean,
 })
 
 const isMenuVisible = ref(false)

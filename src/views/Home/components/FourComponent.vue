@@ -14,17 +14,13 @@
           stretch: 0,
           depth: 100,
           modifier: 1,
-          slideShadows: true
+          slideShadows: true,
         }"
         :pagination="true"
         :modules="modules"
         class="mySwiper"
       >
-        <swiper-slide
-          v-for="(slide, index) in slides"
-          :key="index"
-          class="slide-container"
-        >
+        <swiper-slide v-for="(slide, index) in slides" :key="index" class="slide-container">
           <div class="image-container">
             <img :src="slide.areaUrl" alt="지역 이미지" class="swiper-image" />
             <div class="star-rating" @click="confirmFavorite(slide)">
@@ -47,7 +43,7 @@ import 'swiper/css'
 import 'swiper/css/effect-coverflow'
 import 'swiper/css/pagination'
 import { EffectCoverflow, Pagination } from 'swiper/modules'
-import { fameAreaList } from '@/api/InterestArea'
+import { fameAreaList, registerInterestArea, deleteInterestArea } from '@/api/InterestArea'
 
 const slides = ref([])
 const swiperRef = ref(null)
@@ -57,11 +53,24 @@ onMounted(async () => {
   slides.value = await fameAreaList()
 })
 
-function confirmFavorite(slide) {
+async function confirmFavorite(slide) {
   const message = slide.isInterest ? '관심을 해제하시겠습니까?' : '관심을 등록하시겠습니까?'
-  if (confirm(message)) {
-    slide.isInterest = !slide.isInterest
-    console.log(`${slide.name} 관심 ${slide.isInterest ? '등록됨' : '취소됨'}`)
+  if (!confirm(message)) return
+
+  try {
+    if (slide.isInterest) {
+      await deleteInterestArea(slide.areaUuid)
+      slide.isInterest = false
+      alert(`${slide.name} 관심이 해제되었습니다.`)
+    } else {
+      // 관심 등록 API 호출
+      await registerInterestArea(slide.areaUuid)
+      slide.isInterest = true
+      alert(`${slide.name} 관심이 등록되었습니다.`)
+    }
+  } catch (error) {
+    alert('처리 중 오류가 발생했습니다. 다시 시도해주세요.')
+    console.error(error)
   }
 }
 </script>
