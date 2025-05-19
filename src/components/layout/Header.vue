@@ -12,7 +12,7 @@
     <ul class="links">
       <li><RouterLink to="/" @click="toggleMenu">홈</RouterLink></li>
       <li><RouterLink to="/about" @click="toggleMenu">About Us</RouterLink></li>
-      <li><RouterLink to="/search" @click="toggleMenu">실거래 검색</RouterLink></li>
+      <li><RouterLink to="/map" @click="toggleMenu">실거래 검색</RouterLink></li>
       <li><RouterLink to="/news" @click="toggleMenu">부동산 뉴스</RouterLink></li>
       <li><RouterLink to="/qna" @click="toggleMenu">QnA</RouterLink></li>
       <li><RouterLink to="/mypage" @click="toggleMenu">MyPage</RouterLink></li>
