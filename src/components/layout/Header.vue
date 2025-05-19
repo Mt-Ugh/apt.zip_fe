@@ -1,5 +1,5 @@
 <template>
-  <header id="header" class="alt">
+  <header id="header" :class="['alt', { 'home-header': isHome }]">
     <div class="logo">
       <RouterLink to="/">
         <img src="/APT.ZIP_text.svg" alt="logo" />
@@ -36,6 +36,10 @@ const router = useRouter()
 const userStore = useUserStore()
 
 defineOptions({ name: 'AppHeader' })
+
+defineProps({
+  isHome: Boolean,
+})
 
 const isMenuVisible = ref(false)
 
@@ -120,6 +124,10 @@ const handleLogout = () => {
 
 #header > a:last-child {
   padding-right: 1.25em;
+}
+
+#header.home-header {
+  background: none;
 }
 
 #menu {

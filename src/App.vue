@@ -1,17 +1,20 @@
 <template>
   <div id="app">
-    <Header />
+    <Header :isHome="isHomePage" />
     <router-view />
     <Footer />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import Header from '@/components/layout/Header.vue'
 import Footer from '@/components/layout/Footer.vue'
 
+const route = useRoute()
+const isHomePage = computed(() => route.path === '/')
 const userStore = useUserStore()
 
 onMounted(() => {
