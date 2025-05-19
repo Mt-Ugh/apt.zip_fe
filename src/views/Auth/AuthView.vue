@@ -4,38 +4,38 @@
   <div class="cotn_principal">
     <div class="cont_centrar">
       <div class="cont_signin">
-        <div class="cont_info_log_sign_up">
+        <div class="cont_info_log_signup">
           <div class="col_md_signin">
             <div class="cont_ba_opcitiy">
               <h2>SIGN IN</h2>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-              <button class="btn_signin" @click="changeTosignin">SIGN IN</button>
+              <p>
+                로그인 이후<br />
+                자신의 정보를 조회하세요.
+              </p>
+              <button class="btn_signin" @click="changeToSignin">SIGN IN</button>
             </div>
           </div>
-          <div class="col_md_sign_up">
+          <div class="col_md_signup">
             <div class="cont_ba_opcitiy">
               <h2>SIGN UP</h2>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-              <button class="btn_sign_up" @click="changeToSignUp">SIGN UP</button>
+              <p>
+                회원가입하고<br />
+                더 많은 기능을 사용해보세요.
+              </p>
+              <button class="btn_signup" @click="changeToSignup">SIGN UP</button>
             </div>
           </div>
         </div>
 
         <div class="cont_back_info">
           <div class="cont_img_back_grey">
-            <img
-              src="https://images.unsplash.com/42/U7Fc1sy5SCUDIu4tlJY3_NY_by_PhilippHenzler_philmotion.de.jpg"
-              alt=""
-            />
+            <img :src="AuthBackground" alt="Background" />
           </div>
         </div>
 
         <div :class="['cont_forms', formStateClass]">
           <div class="cont_img_back_">
-            <img
-              src="https://images.unsplash.com/42/U7Fc1sy5SCUDIu4tlJY3_NY_by_PhilippHenzler_philmotion.de.jpg"
-              alt=""
-            />
+            <img :src="AuthBackground" alt="Background" />
           </div>
 
           <form
@@ -50,12 +50,12 @@
             <input type="password" placeholder="Password" v-model="signinPassword" required />
             <button class="btn_signin" type="submit">SIGN IN</button>
             <button class="btn_social_login" type="button" @click="handleGoogleLogin">
-              <img src="/google_signin.svg" alt="Google 로그인 버튼" />
+              <img :src="GoogleSignin" alt="Google 로그인 버튼" />
             </button>
           </form>
 
           <form
-            class="cont_form_sign_up"
+            class="cont_form_signup"
             v-show="formState === 'signup'"
             :style="{ opacity: signupOpacity }"
             @submit.prevent="handleSignup"
@@ -65,7 +65,14 @@
             <input type="email" placeholder="Email" v-model="signupEmail" required />
             <input type="text" placeholder="Name" v-model="name" required />
             <input type="text" placeholder="Nickname" v-model="nickname" required />
-            <input type="text" placeholder="Phone Number" v-model="phoneNumber" required />
+            <input
+              type="text"
+              v-model="phoneNumber"
+              @input="handlePhoneNumberInput"
+              placeholder="Phone Number"
+              maxlength="13"
+              required
+            />
             <input type="password" placeholder="Password" v-model="signupPassword" required />
             <input
               type="password"
@@ -76,7 +83,7 @@
             <p v-if="passwordMismatch" style="color: red; font-size: 13px; margin-top: 5px">
               비밀번호가 일치하지 않습니다.
             </p>
-            <button class="btn_sign_up" type="submit">SIGN UP</button>
+            <button class="btn_signup" type="submit">SIGN UP</button>
           </form>
         </div>
       </div>
@@ -97,6 +104,8 @@ import { signin, signup, getGoogleLoginUrl } from '@/api/Auth'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import CommonModal from '@/components/common/CommonModal.vue'
+import AuthBackground from '@/assets/images/Auth/Authbackground.jpg'
+import GoogleSignin from '@/assets/images/Auth/GoogleSignin.svg'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -125,23 +134,35 @@ const showModalError = (title, message) => {
   showModal.value = true
 }
 
+const handlePhoneNumberInput = (e) => {
+  const raw = e.target.value.replace(/\D/g, '').slice(0, 11)
+
+  if (raw.length <= 3) {
+    phoneNumber.value = raw
+  } else if (raw.length <= 7) {
+    phoneNumber.value = `${raw.slice(0, 3)}-${raw.slice(3)}`
+  } else {
+    phoneNumber.value = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7)}`
+  }
+}
+
 const passwordMismatch = computed(() => {
   return confirmPassword.value && signupPassword.value !== confirmPassword.value
 })
 
 const formStateClass = computed(() => {
   if (formState.value === 'signin') return 'cont_forms_active_signin'
-  if (formState.value === 'signup') return 'cont_forms_active_sign_up'
+  if (formState.value === 'signup') return 'cont_forms_active_signup'
   return ''
 })
 
-const changeTosignin = () => {
+const changeToSignin = () => {
   formState.value = 'signin'
   signinOpacity.value = '1'
   signupOpacity.value = '0'
 }
 
-const changeToSignUp = () => {
+const changeToSignup = () => {
   formState.value = 'signup'
   signinOpacity.value = '0'
   signupOpacity.value = '1'
@@ -222,22 +243,20 @@ const handleSignup = async () => {
   position: relative;
   width: 100%;
   display: flex;
-  /* height: 100%; */
   min-height: 100vh;
-  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#cfd8dc+0,607d8b+100,b0bec5+100 */
   background: #cfd8dc; /* Old browsers */
   background: -moz-linear-gradient(-45deg, #cfd8dc 0%, #607d8b 100%, #b0bec5 100%); /* FF3.6-15 */
   background: -webkit-linear-gradient(
     -45deg,
-    #cfd8dc 0%,
-    #607d8b 100%,
-    #b0bec5 100%
+    #cfdcd7 0%,
+    #bbbaa8 100%,
+    #bfb9ad 100%
   ); /* Chrome10-25,Safari5.1-6 */
   background: linear-gradient(
     135deg,
-    #cfd8dc 0%,
-    #607d8b 100%,
-    #b0bec5 100%
+    #cfdcd7 0%,
+    #bbbaa8 100%,
+    #bfb9ad 100%
   ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cfd8dc', endColorstr='#b0bec5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
@@ -290,7 +309,7 @@ const handleSignup = async () => {
   transition: all 0.5s;
 }
 
-.cont_forms_active_sign_up {
+.cont_forms_active_signup {
   box-shadow: 1px 10px 30px -10px rgba(0, 0, 0, 0.5);
   height: 600px;
   top: -160px;
@@ -347,7 +366,7 @@ const handleSignup = async () => {
   transition: all 0.5s;
 }
 
-.cont_forms_active_sign_up > .cont_img_back_ {
+.cont_forms_active_signup > .cont_img_back_ {
   top: -20px;
   left: -435px;
   -webkit-transition: all 0.5s;
@@ -357,7 +376,7 @@ const handleSignup = async () => {
   transition: all 0.5s;
 }
 
-.cont_info_log_sign_up {
+.cont_info_log_signup {
   position: absolute;
   width: 640px;
   height: 280px;
@@ -396,7 +415,7 @@ const handleSignup = async () => {
   cursor: pointer;
 }
 
-.col_md_sign_up {
+.col_md_signup {
   position: relative;
   float: left;
   width: 50%;
@@ -418,11 +437,11 @@ const handleSignup = async () => {
   background-color: rgba(120, 144, 156, 0.55);
   width: 80%;
   border-radius: 3px;
-  margin-top: 60px;
+  margin-top: 55px;
   padding: 15px 0px;
 }
 
-.btn_sign_up {
+.btn_signup {
   background-color: #ef5350;
   border: none;
   padding: 10px;
@@ -433,7 +452,7 @@ const handleSignup = async () => {
   margin-top: 10px;
   cursor: pointer;
 }
-.cont_forms_active_sign_up {
+.cont_forms_active_signup {
   z-index: 2;
 }
 
@@ -525,7 +544,7 @@ const handleSignup = async () => {
   z-index: 2;
 }
 
-.cont_form_sign_up {
+.cont_form_signup {
   position: absolute;
   width: 320px;
   float: left;
@@ -537,7 +556,7 @@ const handleSignup = async () => {
   transition: all 0.5s;
 }
 
-.cont_form_sign_up > input {
+.cont_form_signup > input {
   text-align: left;
   padding: 15px 5px;
   margin-top: 20px;
@@ -546,7 +565,7 @@ const handleSignup = async () => {
   color: #757575;
 }
 
-.cont_form_sign_up > h2 {
+.cont_form_signup > h2 {
   margin-top: 50px;
   font-weight: 400;
   color: #757575;
@@ -568,7 +587,7 @@ const handleSignup = async () => {
 }
 
 .cont_form_signin > a,
-.cont_form_sign_up > a {
+.cont_form_signup > a {
   color: #757575;
   position: relative;
   float: left;
@@ -587,7 +606,6 @@ const handleSignup = async () => {
 
 .btn_social_login img {
   display: block;
-  /* width: 200px; */
   height: 43px;
 }
 </style>
