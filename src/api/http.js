@@ -49,13 +49,11 @@ instance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
     const userStore = useUserStore(getActivePinia())
-    console.log(error.response)
-    console.log(!originalRequest._retry)
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       try {
         originalRequest._retry = true
         const newAccessToken = await refreshTokens()
-        console.log('newAccessToken', newAccessToken)
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
         return instance(originalRequest)
       } catch (err) {
