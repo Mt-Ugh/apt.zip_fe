@@ -1,9 +1,14 @@
 <template>
   <div class="page-wrapper">
-    <h2 class="title">Q&amp;A</h2>
+   <h2 class="title">
+    <img :src="QnALogo" alt="Q&A" class="title-image" />
+  </h2>
 
-    <SearchBar v-model="searchQuery" />
-    <QAList :dataList="dataList" :searchQuery="searchQuery" v-model:selectedId="selectedId" />
+    <SearchBar v-model="searchQuery" v-model:modelCategory="selectedCategory" />
+
+    <div class="content-wrapper">
+      <QAList :dataList="dataList" :searchQuery="searchQuery" :category="selectedCategory" v-model:selectedId="selectedId" />
+    </div>
   </div>
 </template>
 
@@ -12,11 +17,14 @@ import { ref, onMounted } from 'vue'
 import SearchBar from '@/views/QnA/components/SearchBar.vue'
 import QAList from '@/views/QnA/components/QAList.vue'
 import { QnAList } from '@/api/QnA'
+import QnALogo from '@/assets/images/QnA/QnALogo.png'
 
 const searchQuery = ref('')
 const selectedId = ref(null)
-
+const selectedCategory = ref('')
 const dataList = ref([])
+
+
 
 onMounted(async () => {
   dataList.value = await QnAList()
@@ -24,28 +32,43 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
 .page-wrapper {
-  max-width: 1100px;
-  margin: 0 auto 100px;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; 
   padding-top: 100px;
-  min-height: calc(100vh - 160px);
-  overflow-y: auto;
+  max-width: 1200px;
+  margin: 0 auto;
   font-family: 'Noto Sans KR', sans-serif;
-  position: relative;
 }
 
 @media screen and (max-width: 1545px) {
   .page-wrapper {
-    max-width: 1000px;
+    max-width: 1200px;
     padding-top: 100px;
+
   }
 }
 
-.title {
-  font-weight: 700;
-  font-size: 2.25rem;
-  margin-bottom: 3.5rem;
-  text-align: center;
+.content-wrapper {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 0; 
 }
+
+.qa-list {
+  flex: 1; 
+  overflow-y: auto;
+}
+
+.title-image {
+  max-width: 230px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
 </style>
