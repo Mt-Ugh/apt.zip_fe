@@ -24,3 +24,8 @@ export const fetchAptList = async (dongCode, aptNm) => {
   const res = await axios.get('/dealMap/list', { params })
   return res.data
 }
+
+export const fetchAptDetail = async (aptSeq) => {
+  const res = await axios.get('/dealMap/detail', { params: { aptSeq } })
+  return res.data
+}

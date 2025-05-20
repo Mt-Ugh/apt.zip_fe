@@ -27,7 +27,6 @@ defineProps({ dealList: Array })
 
 function formatPrice(amountStr) {
   const amount = parseInt(amountStr.replace(/,/g, ''), 10)
-
   const hundredMillions = Math.floor(amount / 10000)
   const tenThousands = amount % 10000
 

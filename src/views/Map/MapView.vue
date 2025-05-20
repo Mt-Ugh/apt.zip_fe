@@ -5,7 +5,12 @@
     <div class="main-content">
       <div class="map-section">
         <KakaoMap :selectedApt="selectedApt" />
-        <AptDetailCard v-if="selectedApt" :aptSeq="selectedApt" />
+        <AptDetailCard
+          v-if="selectedApt"
+          :aptSeq="selectedApt"
+          :key="selectedApt"
+          @close="selectedApt = null"
+        />
       </div>
 
       <Transition name="apt-slide">

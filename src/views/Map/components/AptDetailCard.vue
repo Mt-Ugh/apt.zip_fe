@@ -1,40 +1,67 @@
 <template>
-  <div class="detail-card">
-    <!-- 아파트명 -->
-    <h2 class="apt-name">{{ apt.name }}</h2>
-    <p class="apt-address">{{ apt.address }}</p>
+  <div class="detail-card" v-if="aptDetail.aptNm">
+    <button class="close-button" @click="$emit('close')">×</button>
 
-    <!-- 최근 거래 요약 -->
-    <div class="summary">
-      <div class="summary-item">
-        <span class="label">최근 거래가</span>
-        <strong class="value">{{ formatPrice(apt.recentPrice) }}</strong>
+    <h2 class="apt-name">{{ aptDetail.aptNm }}</h2>
+
+    <hr class="divider" />
+
+    <div class="info-grid">
+      <div class="info-columns">
+        <div class="info-block with-icon">
+          <img :src="Pin" alt="주소" class="Pin" />
+          <div>
+            <div class="info-label">주소</div>
+            <div class="info-value">
+              {{ aptDetail.sidoName }} {{ aptDetail.gugunName }} {{ aptDetail.dongName }}
+              {{ aptDetail.jibun }}
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="summary-item">
-        <span class="label">총 거래 건수</span>
-        <strong class="value">{{ apt.totalCount.toLocaleString() }} 건</strong>
+
+      <div class="info-columns horizontal">
+        <div class="info-block with-icon">
+          <img :src="Won" alt="최근 거래가" class="Won" />
+          <div>
+            <div class="info-label">최근 거래가</div>
+            <div class="info-value">{{ formatPrice(aptDetail.dealList[0]?.dealAmount) }}</div>
+          </div>
+        </div>
+        <div class="info-block with-icon">
+          <img :src="Total" alt="총 거래 건수" class="Total" />
+          <div>
+            <div class="info-label">총 거래 건수</div>
+            <div class="info-value">{{ aptDetail.totalDeal.toLocaleString() }} 건</div>
+          </div>
+        </div>
       </div>
-      <div class="summary-item">
-        <span class="label">조합 설립인가</span>
-        <strong class="value">{{ apt.approveDate }}</strong>
+
+      <div class="info-columns">
+        <div class="info-block with-icon">
+          <img :src="Tool" alt="준공 년도" class="Tool" />
+          <div>
+            <div class="info-label">준공 년도</div>
+            <div class="info-value">{{ aptDetail.buildYear }}년</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- 최고/최저 실거래가 -->
-    <div class="price-extremes">
-      <div class="high">
-        <span>최고 실거래가</span>
-        <strong>{{ formatPrice(apt.maxPrice) }}</strong>
+    <div class="extreme-prices">
+      <div class="price-box high">
+        <div class="label">최고 실거래가</div>
+        <div class="value">{{ formatPrice(aptDetail.maxAmount) }}</div>
       </div>
-      <div class="low">
-        <span>최저 실거래가</span>
-        <strong>{{ formatPrice(apt.minPrice) }}</strong>
+      <div class="price-box low">
+        <div class="label">최저 실거래가</div>
+        <div class="value">{{ formatPrice(aptDetail.minAmount) }}</div>
       </div>
     </div>
 
-    <!-- 거래 내역 테이블 -->
+    <hr class="divider" />
+    <h4>거래 내역</h4>
     <div class="table-section">
-      <h4>거래 내역</h4>
       <table>
         <thead>
           <tr>
@@ -46,12 +73,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, idx) in apt.dealHistory" :key="idx">
-            <td>{{ item.date }}</td>
-            <td>{{ item.dong }}</td>
+          <tr v-for="(item, idx) in aptDetail.dealList" :key="idx">
+            <td>{{ formatDate(item.dealYear, item.dealMonth, item.dealDay) }}</td>
+            <td>{{ item.aptDong }}</td>
             <td>{{ item.floor }}</td>
-            <td>{{ item.area }}㎡</td>
-            <td>{{ formatPrice(item.price) }}</td>
+            <td>{{ item.excluUseAr }}㎡</td>
+            <td>{{ formatPrice(item.dealAmount) }}</td>
           </tr>
         </tbody>
       </table>
@@ -60,111 +87,191 @@
 </template>
 
 <script setup>
-defineProps({
-  aptSeq: Object,
-})
+import { ref, watch, toRef } from 'vue'
+import { fetchAptDetail } from '@/api/DealMap'
+import Pin from '@/assets/images/Map/Pin.svg'
+import Tool from '@/assets/images/Map/Tool.svg'
+import Total from '@/assets/images/Map/Total.svg'
+import Won from '@/assets/images/Map/Won.svg'
 
-/** 금액 포맷 함수 */
+const props = defineProps({ aptSeq: String })
+const aptSeqRef = toRef(props, 'aptSeq')
+const aptDetail = ref({})
+
+watch(
+  aptSeqRef,
+  async (newSeq) => {
+    if (newSeq) {
+      const result = await fetchAptDetail(newSeq)
+      result.dealList.sort(
+        (a, b) =>
+          new Date(b.dealYear, b.dealMonth - 1, b.dealDay) -
+          new Date(a.dealYear, a.dealMonth - 1, a.dealDay),
+      )
+      aptDetail.value = result
+    }
+  },
+  { immediate: true },
+)
+
 function formatPrice(amountStr) {
+  if (!amountStr || typeof amountStr !== 'string') return '정보 없음'
   const amount = parseInt(amountStr.replace(/,/g, ''), 10)
+  if (isNaN(amount)) return '정보 없음'
+  const h = Math.floor(amount / 10000)
+  const t = amount % 10000
+  return h > 0 ? `${h}억 ${t ? t.toLocaleString() + '만원' : ''}` : `${t.toLocaleString()}만원`
+}
 
-  const hundredMillions = Math.floor(amount / 10000)
-  const tenThousands = amount % 10000
-
-  if (hundredMillions > 0 && tenThousands > 0) {
-    return `${hundredMillions}억 ${tenThousands.toLocaleString()}만원`
-  } else if (hundredMillions > 0 && tenThousands === 0) {
-    return `${hundredMillions}억`
-  } else {
-    return `${tenThousands.toLocaleString()}만원`
-  }
+function formatDate(year, month, day) {
+  const mm = String(month).padStart(2, '0')
+  const dd = String(day).padStart(2, '0')
+  return `${String(year).slice(2)}.${mm}.${dd}`
 }
 </script>
 
 <style scoped>
 .detail-card {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  width: 420px;
-  background: white;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 640px;
+  max-height: 90vh;
+  background: #fff;
   border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   padding: 24px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   font-family: 'Pretendard', sans-serif;
-  z-index: 10;
+  overflow-y: auto;
+  z-index: 10003;
+}
+
+.close-button {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
 }
 
 .apt-name {
   font-size: 20px;
-  margin-bottom: 4px;
   font-weight: bold;
+  margin-bottom: 4px;
 }
 
-.apt-address {
-  font-size: 14px;
+.apt-type {
+  font-size: 16px;
+  font-weight: normal;
+  margin-left: 4px;
   color: #666;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
 }
 
-.summary {
+.divider {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 12px 0 24px;
+}
+
+.info-grid {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.summary-item {
-  flex: 1;
-  min-width: 120px;
-}
-
-.summary-item .label {
-  font-size: 12px;
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
   color: #777;
 }
 
-.summary-item .value {
-  display: block;
-  font-size: 16px;
-  margin-top: 4px;
-  font-weight: 600;
+.info-row.column {
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.price-extremes {
+.info-columns {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  text-align: flex-start;
+  gap: 12px;
 }
 
-.price-extremes .high,
-.price-extremes .low {
+.info-columns.horizontal {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.info-block {
+  display: flex;
   flex: 1;
-  text-align: center;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  background: #f9f9f9;
+  padding: 20px 8px;
+  align-items: flex-start;
+  gap: 10px;
 }
 
-.price-extremes .high {
+.info-block > img {
+  height: 35px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.extreme-prices {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto 24px;
+  gap: 10%;
+  height: 90px;
+  width: 90%;
+}
+
+.price-box {
+  flex: 1;
+  border-radius: 12px;
+  padding: 16px;
+  background: #f5f5f5;
+  text-align: center;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 1.8;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.price-box.high {
   border: 1px solid #e53935;
   color: #e53935;
 }
 
-.price-extremes .low {
+.price-box.low {
   border: 1px solid #1e88e5;
   color: #1e88e5;
-  margin-left: 10px;
 }
 
-.table-section h4 {
-  font-size: 15px;
-  margin-bottom: 10px;
-  color: #333;
+.table-section {
+  max-height: 200px;
+  overflow-y: auto;
+  position: relative;
 }
 
 .table-section table {
@@ -178,10 +285,14 @@ function formatPrice(amountStr) {
   padding: 8px;
   text-align: center;
   border-bottom: 1px solid #eee;
+  white-space: nowrap;
 }
 
 .table-section th {
-  background-color: #f5f5f5;
+  background-color: #f9f9f9;
   font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 </style>
