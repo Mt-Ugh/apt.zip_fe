@@ -16,14 +16,9 @@
     <div class="form-group">
       <label for="category">카테고리</label>
       <select id="category" v-model="category">
-        <option value="">선택하세요</option>
-        <option value="SALES">매매</option>
-        <option value="RENT">전세/월세</option>
-        <option value="FINANCE">금융</option>
-        <option value="INVESTMENT">투자</option>
-        <option value="REGIONS">지역</option>
-        <option value="MANAGEMENT">관리</option>
-        <option value="ETC">기타</option>
+        <option v-for="cat in QnACategory" :key="cat.value" :value="cat.value">
+          {{ cat.label }}
+        </option>
       </select>
     </div>
 
@@ -49,6 +44,7 @@ import { useRouter } from 'vue-router'
 import CommonModal from '@/components/common/CommonModal.vue'
 import { registerQnA } from '@/api/QnA'
 import BackIcon from '@/assets/images/Common/BackIcon.png'
+import { QnACategory } from '@/constants/category.js'  // 카테고리 상수 파일 임포트
 
 const router = useRouter()
 
@@ -70,14 +66,12 @@ const goBack = () => {
   router.push('/qna')
 }
 
-
 watch(title, (newVal) => {
   if (newVal.length >= 255) {
     showModalError('입력 제한', '제목은 255자를 넘을 수 없습니다.')
     title.value = newVal.slice(0, 255) // 자동으로 255자까지만 유지
   }
 })
-
 
 watch(content, (newVal) => {
   if (newVal.length >= 255) {
@@ -92,19 +86,15 @@ const handleQnARegist = async () => {
     return
   }
 
-  console.log('QnA 등록:', title.value, category.value, content.value)
-
   try {
     const result = await registerQnA({
       title: title.value,
       category: category.value,
       content: content.value,
     })
-    console.log('등록된 QnA 데이터:', result)
     router.push('/qna/detail/' + result.qnaUuid)
-  } catch (error) {
+  } catch {
     showModalError('등록 실패', 'QnA 등록 중 오류가 발생했습니다.')
-    console.error(error)
   }
 }
 </script>
@@ -175,6 +165,15 @@ const handleQnARegist = async () => {
   background-color: #fff;
   box-sizing: border-box;
   font-family: 'Noto Sans KR', sans-serif;
+}
+
+.form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+  padding-right: 2.5rem; 
 }
 
 .regist-btn {

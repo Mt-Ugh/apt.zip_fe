@@ -18,20 +18,15 @@
         <img :src="SearchIcon" alt="search" />
       </span>
 
-      <select
-        class="category-select"
-        :value="modelCategory"
-        @change="$emit('update:modelCategory', $event.target.value)"
-      >
-        <option value="">전체</option>
-        <option value="SALES">매매</option>
-        <option value="RENT">전세/월세</option>
-        <option value="FINANCE">금융</option>
-        <option value="INVESTMENT">투자</option>
-        <option value="REGIONS">지역</option>
-        <option value="MANAGEMENT">관리</option>
-        <option value="ETC">기타</option>
-      </select>
+        <select
+          class="category-select"
+          :value="modelCategory"
+          @change="$emit('update:modelCategory', $event.target.value)"
+        >
+          <option v-for="cat in QnACategory" :key="cat.value" :value="cat.value">
+            {{ cat.label }}
+          </option>
+        </select>
     </div>
   </div>
 </template>
@@ -40,6 +35,7 @@
 import SearchIcon from '@/assets/images/Common/SearchIcon.svg'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { QnACategory } from '@/constants/category.js'
 
 const router = useRouter()
 const userStore = useUserStore()

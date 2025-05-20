@@ -9,9 +9,10 @@
         >
           <div style="display: flex; align-items: center; gap: 0.5rem">
             <img
-              :src="answerItem.profile_url || defaultProfileUrl"
+              :src="answerItem.profileUrl || DefaultProfile"
               alt="프로필 이미지"
               class="answer-profile-img"
+              @error="e => e.target.src = DefaultProfile"
             />
             <span class="answer-author">{{ answerItem.nickname }}</span>
           </div>
@@ -36,6 +37,7 @@
 
 <script setup>
 import { defineProps } from 'vue'
+import DefaultProfile from '@/assets/images/Common/DefaultProfile.svg'
 
 const props = defineProps({
   answers: {
@@ -43,8 +45,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-const defaultProfileUrl = 'https://image.blip.kr/v1/file/51b7fb37979d39449a9e61dd731ce4c6'
 
 function formatDate(dateString) {
   if (!dateString) return ''

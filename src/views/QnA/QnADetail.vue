@@ -16,7 +16,7 @@
     </div>
     <div class="meta">
       <div class="meta-left">
-        <img :src="qna.profileUrl ?? DefaultProfile" alt="프로필 이미지" class="profile-img" />
+        <img :src="qna.profileUrl || DefaultProfile" alt="프로필 이미지" class="profile-img" />
         <span class="author">{{ qna.nickname }}</span>
       </div>
       <span class="date">{{ formatDate(qna.createdAt) }}</span>
@@ -90,13 +90,9 @@ const showModalError = (title, message) => {
 }
 
 const fetchDetail = async (id) => {
-  try {
-    const data = await QnADetail(id)
-    qna.value = data.detailResponse
-    answers.value = data.qnAanswerResponse || []
-  } catch (e) {
-    console.error('QnA 상세 조회 실패', e)
-  }
+  const data = await QnADetail(id)
+  qna.value = data
+  answers.value = data.qnaAnswerResponse || []
 }
 
 watch(
@@ -134,9 +130,8 @@ const submitAnswer = async () => {
       await registerAnswer(qnaUuid.value, payload)
       answer.value = ''
       await fetchDetail(qnaUuid.value)
-    } catch (error) {
+    } catch {
       showModalError('등록 실패', 'QnA 등록 중 오류가 발생했습니다.')
-      console.error(error)
     }
   } else {
     showModalError('등록 실패', '로그인을 해주세요')
@@ -151,9 +146,8 @@ const deleteQnA = () => {
       await apiDeleteQnA(qnaUuid.value)
       showConfirmModal.value = false
       router.push('/qna')
-    } catch (error) {
+    } catch {
       showModalError('삭제 실패', 'QnA 삭제 중 오류가 발생했습니다.')
-      console.error(error)
     }
   }
   showConfirmModal.value = true
@@ -167,9 +161,8 @@ const deleteAnswer = (ansId) => {
       await apiDeleteAnswer(ansId)
       answers.value = answers.value.filter((item) => item.qnaAnsUuid !== ansId)
       showConfirmModal.value = false
-    } catch (error) {
+    } catch {
       showModalError('삭제 실패', '답변 삭제 중 오류가 발생했습니다.')
-      console.error(error)
     }
   }
   showConfirmModal.value = true
@@ -230,6 +223,9 @@ const onCancel = () => {
 }
 
 .title {
+  word-break: break-word; 
+  overflow-wrap: break-word; 
+  white-space: pre-wrap; 
   font-weight: 700;
   font-size: 2rem;
   margin-bottom: 0;
@@ -262,6 +258,8 @@ const onCancel = () => {
 }
 
 .content {
+  word-break: break-word;
+  overflow-wrap: break-word; 
   white-space: pre-wrap;
   line-height: 1.6;
   font-size: 1.1rem;
@@ -296,16 +294,20 @@ hr {
 }
 
 textarea {
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #e4e4e4;
-  padding: 0.8rem 1rem;
-  font-size: 1rem;
-  resize: vertical;
-  font-family: 'Noto Sans KR', sans-serif;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   box-sizing: border-box;
+  width: 100%;
+  resize: vertical;
+  padding: 0.8rem 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  border: 1px solid #e4e4e4;
+  border-radius: 8px;
   color: #212529;
 }
+
 
 .submit-btn {
   margin-top: 0.5rem;

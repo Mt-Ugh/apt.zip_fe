@@ -29,7 +29,6 @@ export const deleteQnA = async (qnaUuid) => {
 }
 
 export const registerAnswer = async (qnaUuid, payload) => {
-  console.log(qnaUuid, payload)
   const res = await axios.post(`/qna/answerRegist/${qnaUuid}`, payload)
   if (res.status === 201) {
     return res.data
