@@ -18,7 +18,12 @@
   <div class="pagination">
     <button @click="prevPage" :disabled="page === 1">&lt;</button>
 
-    <button v-for="p in totalPages" :key="p" :class="{ active: p === page }" @click="goToPage(p)">
+    <button
+      v-for="p in visiblePages"
+      :key="p"
+      :class="{ active: p === page }"
+      @click="goToPage(p)"
+    >
       {{ p }}
     </button>
 
@@ -109,6 +114,27 @@ function nextPage() {
 function goToPage(p) {
   page.value = p
 }
+
+const visiblePages = computed(() => {
+  const total = totalPages.value
+  const current = page.value
+  const maxVisible = 5
+
+  let start = Math.max(1, current - Math.floor(maxVisible / 2))
+  let end = start + maxVisible - 1
+
+  if (end > total) {
+    end = total
+    start = Math.max(1, end - maxVisible + 1)
+  }
+
+  const pages = []
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  return pages
+})
+
 </script>
 
 <style scoped>

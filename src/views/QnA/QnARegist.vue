@@ -10,7 +10,7 @@
 
     <div class="form-group">
       <label for="title">제목</label>
-      <input id="title" v-model="title" type="text" placeholder="제목을 입력하세요" />
+      <input id="title" v-model="title" type="text" placeholder="제목을 입력하세요" maxlength="255" />
     </div>
 
     <div class="form-group">
@@ -29,7 +29,7 @@
 
     <div class="form-group">
       <label for="content">내용</label>
-      <textarea id="content" v-model="content" rows="10" placeholder="내용을 입력하세요"></textarea>
+      <textarea id="content" v-model="content" rows="10" placeholder="내용을 입력하세요" maxlength="255"></textarea>
     </div>
 
     <button class="regist-btn" @click="handleQnARegist">등록</button>
@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonModal from '@/components/common/CommonModal.vue'
 import { registerQnA } from '@/api/QnA'
@@ -69,6 +69,22 @@ const showModalError = (title, message) => {
 const goBack = () => {
   router.push('/qna')
 }
+
+
+watch(title, (newVal) => {
+  if (newVal.length >= 255) {
+    showModalError('입력 제한', '제목은 255자를 넘을 수 없습니다.')
+    title.value = newVal.slice(0, 255) // 자동으로 255자까지만 유지
+  }
+})
+
+
+watch(content, (newVal) => {
+  if (newVal.length >= 255) {
+    showModalError('입력 제한', '내용은 255자를 넘을 수 없습니다.')
+    content.value = newVal.slice(0, 255)
+  }
+})
 
 const handleQnARegist = async () => {
   if (!title.value.trim() || !content.value.trim() || !category.value) {

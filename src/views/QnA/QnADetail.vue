@@ -16,7 +16,7 @@
     </div>
     <div class="meta">
       <div class="meta-left">
-        <img :src="qna.profileUrl ?? defaultProfileUrl" alt="프로필 이미지" class="profile-img" />
+        <img :src="qna.profileUrl ?? DefaultProfile" alt="프로필 이미지" class="profile-img" />
         <span class="author">{{ qna.nickname }}</span>
       </div>
       <span class="date">{{ formatDate(qna.createdAt) }}</span>
@@ -30,7 +30,7 @@
 
     <section class="answer-input">
       <label for="answer">답변 작성</label>
-      <textarea id="answer" rows="5" v-model="answer" placeholder="내용을 입력하세요"></textarea>
+      <textarea id="answer" rows="5" v-model="answer" placeholder="내용을 입력하세요" maxlength="255"></textarea>
       <button class="submit-btn" @click="submitAnswer">전달</button>
     </section>
   </div>
@@ -65,6 +65,7 @@ import CommonModal from '@/components/common/CommonModal.vue'
 import ConfirmModal from '@/components/common/ConfirmModal.vue'
 import QnAAnswer from '@/views/QnA/components/AnswerList.vue'
 import BackIcon from '@/assets/images/Common/BackIcon.png'
+import DefaultProfile from '@/assets/images/Common/DefaultProfile.svg'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
@@ -81,7 +82,6 @@ const confirmTitle = ref('')
 const confirmMessage = ref('')
 const confirmCallback = ref(null)
 const userStore = useUserStore()
-const defaultProfileUrl = 'https://image.blip.kr/v1/file/51b7fb37979d39449a9e61dd731ce4c6'
 
 const showModalError = (title, message) => {
   modalTitle.value = title
@@ -114,6 +114,13 @@ function formatDate(dateString) {
   const date = new Date(dateString)
   return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`
 }
+
+watch(answer, (newVal) => {
+  if (newVal.length >= 255) {
+    showModalError('입력 제한', '답변은 255자를 넘을 수 없습니다.')
+    answer.value = newVal.slice(0, 255)
+  }
+})
 
 const submitAnswer = async () => {
   if (!answer.value.trim()) {
