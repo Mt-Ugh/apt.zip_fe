@@ -41,7 +41,6 @@ export const registerAnswer = async (qnaUuid, payload) => {
 export const deleteAnswer = async (qnaUuid) => {
   const res = await axios.delete(`/qna/answerDelete/${qnaUuid}`)
   if (res.status === 200) {
-    // 201 로 수정
     return true
   } else {
     throw new Error('등록 실패')
