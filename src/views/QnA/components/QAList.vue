@@ -52,13 +52,11 @@ const handleResize = () => {
   const width = window.innerWidth
   if (width <= 1600) {
     pageSize.value = 3
-  }else if (width <= 2100) {
-    pageSize.value = 5
-  } 
-  else if (width <= 2400) {
+  } else if (width <= 2100) {
     pageSize.value = 7
-  }   
-  else {
+  } else if (width <= 2400) {
+    pageSize.value = 7
+  } else {
     pageSize.value = 10
   }
 }
@@ -76,7 +74,7 @@ watch(
   () => [props.searchQuery, props.category],
   () => {
     page.value = 1
-  }
+  },
 )
 
 const filteredData = computed(() => {
@@ -94,7 +92,6 @@ const filteredList = computed(() => {
   const start = (page.value - 1) * pageSize.value
   return filteredData.value.slice(start, start + pageSize.value)
 })
-
 
 const totalPages = computed(() => {
   if (!pageSize.value || isNaN(pageSize.value) || pageSize.value <= 0) return 1
@@ -135,7 +132,9 @@ function goToPage(p) {
   border: 1px solid #e4e4e4;
   border-radius: 12px;
   background-color: #fff;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
   cursor: pointer;
 }
 
@@ -144,7 +143,7 @@ function goToPage(p) {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
   border-color: #d3cfc3;
-  z-index: 1; 
+  z-index: 1;
 }
 
 .qa-item.selected {
@@ -195,7 +194,9 @@ function goToPage(p) {
   background-color: transparent;
   color: #666;
   border-radius: 8px;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .pagination button:hover {
@@ -217,7 +218,7 @@ function goToPage(p) {
   .qa-item {
     display: grid;
     grid-template-columns: 80px 1fr 100px;
-    padding: 1rem 0;
+    padding: 1rem;
     border-bottom: 1px solid #eee;
     font-size: 0.9rem;
     cursor: pointer;
@@ -226,8 +227,8 @@ function goToPage(p) {
     width: 1030px;
     box-sizing: border-box;
   }
-  
-   .pagination {
+
+  .pagination {
     display: flex;
     justify-content: center;
     margin-bottom: 1rem;
@@ -239,15 +240,14 @@ function goToPage(p) {
   }
 }
 
-
-@media screen AND (max-width: 2100px) {  
-   .pagination {
+@media screen AND (max-width: 2100px) {
+  .pagination {
     margin-top: 1rem;
   }
 }
 
-@media screen AND (max-height: 1500px) {  
-   .pagination {
+@media screen AND (max-height: 1500px) {
+  .pagination {
     margin-top: 2rem;
   }
 }

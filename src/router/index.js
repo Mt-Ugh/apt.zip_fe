@@ -4,6 +4,7 @@ import AuthCallback from '@/views/Auth/AuthCallback.vue'
 import HomeView from '@/views/Home/HomeView.vue'
 import QnAView from '@/views/QnA/QnAView.vue'
 import QnADetail from '@/views/QnA/QnADetail.vue'
+import QnARegist from '@/views/QnA/QnARegist.vue'
 
 const routes = [
   {
@@ -26,10 +27,15 @@ const routes = [
     name: 'QnAView',
     component: QnAView,
   },
-   {
+  {
     path: '/qna/detail/:qnaUuid',
     name: 'QnADetail',
     component: QnADetail,
+  },
+  {
+    path: '/qna/regist',
+    name: 'QnARegist',
+    component: QnARegist,
   },
 ]
 

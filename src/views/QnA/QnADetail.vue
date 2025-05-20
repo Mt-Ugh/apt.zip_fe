@@ -1,71 +1,43 @@
 <template>
-  <div>
-    <div class="qna-detail" v-if="qna">
-      <div class="qna-header">
-        <div class="back-container">
-          <button class="back-btn" @click="goBack" aria-label="뒤로가기">←</button>
-        </div>
-
-        <h2 class="title">
-          {{ qna.title }}
-          <button
-            v-if="qna.isMineQnA === 1"
-            class="delete-btn"
-            @click="deleteQnA"
-            title="삭제"
-          >
-            ✕
-          </button>
-        </h2>
+  <div class="qna-detail" v-if="qna">
+    <div class="qna-header">
+      <div class="back-container">
+        <button class="back-btn" @click="goBack" aria-label="뒤로가기">
+          <img :src="BackIcon" alt="" />
+        </button>
       </div>
-      <div class="meta">
+
+      <h2 class="title">
+        {{ qna.title }}
+        <button v-if="qna.isMineQnA === 1" class="delete-btn" @click="deleteQnA" title="삭제">
+          ✕
+        </button>
+      </h2>
+    </div>
+    <div class="meta">
+      <div class="meta-left">
+        <img :src="qna.profileUrl ?? defaultProfileUrl" alt="프로필 이미지" class="profile-img" />
         <span class="author">{{ qna.nickname }}</span>
-        <span class="date">{{ formatDate(qna.createdAt) }}</span>
       </div>
-
-      <hr />
-
-      <div class="content" v-html="qna.content"></div>
-
-      <section v-if="answers.length" class="answers">
-        <h3>답변</h3>
-        <ul>
-          <li v-for="answerItem in answers" :key="answerItem.qnaAnsUuid" class="answer-item">
-            <div class="answer-meta">
-              <span class="answer-author">{{ answerItem.nickname }}</span>
-              <div class="answer-right-meta">
-                <span class="answer-date">{{ formatDate(answerItem.createdAt) }}</span>
-                <button
-                  v-if="answerItem.isMineAns === 1"
-                  class="delete-btn"
-                  @click="deleteAnswer(answerItem.qnaAnsUuid)"
-                  title="삭제"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            <p class="answer-content">{{ answerItem.qnaContent }}</p>
-          </li>
-        </ul>
-      </section>
-
-      <section class="answer-input">
-        <label for="answer">답변 작성</label>
-        <textarea
-          id="answer"
-          rows="5"
-          v-model="answer"
-          placeholder="내용을 입력하세요"
-        ></textarea>
-        <button class="submit-btn" @click="submitAnswer">전달</button>
-      </section>
+      <span class="date">{{ formatDate(qna.createdAt) }}</span>
     </div>
 
-    <div v-else>Loading...</div>
+    <hr />
+
+    <div class="content" v-html="qna.content"></div>
+
+    <QnAAnswer :answers="answers" @delete-answer="deleteAnswer" />
+
+    <section class="answer-input">
+      <label for="answer">답변 작성</label>
+      <textarea id="answer" rows="5" v-model="answer" placeholder="내용을 입력하세요"></textarea>
+      <button class="submit-btn" @click="submitAnswer">전달</button>
+    </section>
   </div>
 
-   <CommonModal
+  <div v-else>Loading...</div>
+
+  <CommonModal
     :visible="showModal"
     :title="modalTitle"
     :message="modalMessage"
@@ -81,11 +53,19 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
 import { ref, watch, computed } from 'vue'
-import { QnADetail } from '@/api/QnA'
+import { useRoute, useRouter } from 'vue-router'
+import {
+  QnADetail,
+  deleteQnA as apiDeleteQnA,
+  registerAnswer,
+  deleteAnswer as apiDeleteAnswer,
+} from '@/api/QnA'
 import CommonModal from '@/components/common/CommonModal.vue'
 import ConfirmModal from '@/components/common/ConfirmModal.vue'
+import QnAAnswer from '@/views/QnA/components/AnswerList.vue'
+import BackIcon from '@/assets/images/Common/BackIcon.png'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const route = useRoute()
@@ -99,7 +79,9 @@ const modalMessage = ref('')
 const showConfirmModal = ref(false)
 const confirmTitle = ref('')
 const confirmMessage = ref('')
-const confirmCallback = ref(null) // 삭제 확정 시 호출할 함수 또는 람다 저장
+const confirmCallback = ref(null)
+const userStore = useUserStore()
+const defaultProfileUrl = 'https://image.blip.kr/v1/file/51b7fb37979d39449a9e61dd731ce4c6'
 
 const showModalError = (title, message) => {
   modalTitle.value = title
@@ -117,55 +99,78 @@ const fetchDetail = async (id) => {
   }
 }
 
-watch(qnaUuid, (newId) => {
-  if (newId) fetchDetail(newId)
-}, { immediate: true })
+watch(
+  qnaUuid,
+  (newId) => {
+    if (newId) fetchDetail(newId)
+  },
+  { immediate: true },
+)
 
-const goBack = () => {
-  router.back()
-}
+const goBack = () => router.push('/qna/')
 
 function formatDate(dateString) {
   if (!dateString) return ''
   const date = new Date(dateString)
-  return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2,'0')}.${date.getDate().toString().padStart(2,'0')}`
+  return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`
 }
 
-// 답변 제출 함수 예시 (구현 필요)
-const submitAnswer = () => {
+const submitAnswer = async () => {
   if (!answer.value.trim()) {
     showModalError('입력 오류', '답변 내용을 입력하세요.')
     return
   }
-  // TODO: API 호출하여 답변 등록 처리
-  answer.value = ''
+
+  if (userStore.isLoggedIn) {
+    try {
+      const payload = { ans_content: answer.value }
+      await registerAnswer(qnaUuid.value, payload)
+      answer.value = ''
+      await fetchDetail(qnaUuid.value)
+    } catch (error) {
+      showModalError('등록 실패', 'QnA 등록 중 오류가 발생했습니다.')
+      console.error(error)
+    }
+  } else {
+    showModalError('등록 실패', '로그인을 해주세요')
+  }
 }
 
-// QnA 삭제 함수 예시 (구현 필요)
 const deleteQnA = () => {
   confirmTitle.value = 'QnA 삭제 확인'
   confirmMessage.value = '정말 삭제하시겠습니까?'
   confirmCallback.value = async () => {
-    // TODO: API 호출하여 QnA 삭제 처리
-    showConfirmModal.value = false
+    try {
+      await apiDeleteQnA(qnaUuid.value)
+      showConfirmModal.value = false
+      router.push('/qna')
+    } catch (error) {
+      showModalError('삭제 실패', 'QnA 삭제 중 오류가 발생했습니다.')
+      console.error(error)
+    }
   }
   showConfirmModal.value = true
 }
 
-// 답변 삭제 함수 예시 (구현 필요)
 const deleteAnswer = (ansId) => {
   confirmTitle.value = '답변 삭제 확인'
   confirmMessage.value = '정말 삭제하시겠습니까?'
   confirmCallback.value = async () => {
-    // TODO: API 호출하여 답변 삭제 처리
-    console.log('답변 삭제:', ansId)
-    showConfirmModal.value = false
+    try {
+      await apiDeleteAnswer(ansId)
+      answers.value = answers.value.filter((item) => item.qnaAnsUuid !== ansId)
+      showConfirmModal.value = false
+    } catch (error) {
+      showModalError('삭제 실패', '답변 삭제 중 오류가 발생했습니다.')
+      console.error(error)
+    }
   }
   showConfirmModal.value = true
 }
 
 const onConfirm = () => {
   if (confirmCallback.value) {
+    showConfirmModal.value = false
     confirmCallback.value()
   }
 }
@@ -174,18 +179,28 @@ const onCancel = () => {
   showConfirmModal.value = false
 }
 </script>
+<style>
+.qna-detail {
+  max-width: 1200px;
+  margin: 12rem auto 18rem auto;
+  padding: 3rem 3rem;
+  background: #f8faff;
+  border-radius: 12px;
+  box-shadow: 0 2px 13px #d3cfc3;
+  font-family: 'Noto Sans KR', sans-serif;
+  display: block;
+}
 
-<style scoped>
 .qna-header {
   display: flex;
-  flex-direction: column; 
-  align-items: flex-start; 
+  flex-direction: column;
   margin-bottom: 1rem;
-  gap: 0.5rem; 
+  gap: 0.5rem;
+  align-items: stretch;
 }
 
 .back-container {
-  margin-bottom: 0.5rem; 
+  margin-bottom: 0.5rem;
 }
 
 .back-btn {
@@ -200,14 +215,10 @@ const onCancel = () => {
   user-select: none;
 }
 
-.qna-detail {
-  max-width: 1200px;
-  margin: 12rem auto 18rem auto; 
-  padding: 4rem 4rem;           
-  background: #f8faff;
-  border-radius: 12px;
-  box-shadow: 0 2px 13px #d3cfc3;
-  font-family: 'Noto Sans KR', sans-serif;
+.back-btn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
   display: block;
 }
 
@@ -223,10 +234,24 @@ const onCancel = () => {
 
 .meta {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   color: #868e96;
   font-size: 1rem;
   margin-bottom: 1rem;
+}
+
+.meta-left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.profile-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .content {
@@ -254,6 +279,13 @@ hr {
   margin-bottom: 0.5rem;
   font-size: 1rem;
   color: #212529;
+}
+
+.answer-profile-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 textarea {
@@ -314,7 +346,7 @@ textarea {
 
 .answer-meta {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 0.5rem;
   font-size: 0.85rem;
@@ -351,5 +383,12 @@ textarea {
 
 .delete-btn:hover {
   color: #a12c2b;
+}
+
+@media screen and (max-width: 2000px) {
+  .qna-detail {
+    max-width: 1000px;
+    margin: 6.5rem auto 11rem auto;
+  }
 }
 </style>
