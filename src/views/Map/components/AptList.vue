@@ -24,11 +24,12 @@
 
 <script setup>
 import { useMapStore } from '@/stores/mapStore'
+import { storeToRefs } from 'pinia'
 const mapStore = useMapStore()
-const dealList = mapStore.dealList
+const { dealList } = storeToRefs(mapStore)
 
 function selectApt(apt) {
-  mapStore.setSelectedApt(apt.aptSeq)
+  mapStore.setSelectedApt(apt)
 }
 
 function formatPrice(amount) {

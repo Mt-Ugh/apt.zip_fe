@@ -100,9 +100,9 @@ const aptDetail = ref({})
 
 watch(
   () => mapStore.selectedApt,
-  async (newSeq) => {
-    if (newSeq) {
-      const result = await fetchAptDetail(newSeq)
+  async (apt) => {
+    if (apt && apt.aptSeq) {
+      const result = await fetchAptDetail(apt.aptSeq)
       result.dealList.sort(
         (a, b) =>
           new Date(b.dealYear, b.dealMonth - 1, b.dealDay) -

@@ -100,6 +100,11 @@ async function searchAptList() {
     mapStore.setDealList(result)
     mapStore.setDongCode(dong.value)
     mapStore.setSelectedApt(null)
+    mapStore.setSelectedLocation({
+      sido: sido.value,
+      gugun: gugun.value,
+      dong: dongList.value.find((d) => d.dongCode === dong.value)?.dongName || '',
+    })
   }
 }
 
