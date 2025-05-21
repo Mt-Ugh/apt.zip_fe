@@ -114,13 +114,18 @@ watch(
   { immediate: true },
 )
 
-function formatPrice(amountStr) {
-  if (!amountStr || typeof amountStr !== 'string') return '정보 없음'
-  const amount = parseInt(amountStr.replace(/,/g, ''), 10)
+function formatPrice(amount) {
   if (isNaN(amount)) return '정보 없음'
-  const h = Math.floor(amount / 10000)
-  const t = amount % 10000
-  return h > 0 ? `${h}억 ${t ? t.toLocaleString() + '만원' : ''}` : `${t.toLocaleString()}만원`
+  const hundredMillions = Math.floor(amount / 10000)
+  const tenThousands = amount % 10000
+
+  if (hundredMillions > 0 && tenThousands > 0) {
+    return `${hundredMillions}억 ${tenThousands.toLocaleString()}만원`
+  } else if (hundredMillions > 0 && tenThousands === 0) {
+    return `${hundredMillions}억`
+  } else {
+    return `${tenThousands.toLocaleString()}만원`
+  }
 }
 
 function formatDate(year, month, day) {
