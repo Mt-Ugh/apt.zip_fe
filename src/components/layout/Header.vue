@@ -16,6 +16,7 @@
       <li><RouterLink to="/news" @click="toggleMenu">부동산 뉴스</RouterLink></li>
       <li><RouterLink to="/qna" @click="toggleMenu">QnA</RouterLink></li>
       <li><RouterLink to="/mypage" @click="toggleMenu">MyPage</RouterLink></li>
+      <li><RouterLink to="/interestDeal" @click="toggleMenu">관심매물</RouterLink></li>
       <li v-if="userStore.isLoggedIn">
         <a href="#" @click.prevent="handleLogout">로그아웃</a>
       </li>
