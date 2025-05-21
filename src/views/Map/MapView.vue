@@ -20,7 +20,7 @@
       </Transition>
     </div>
 
-    <ReviewSection v-if="dongCode" />
+    <ReviewSection v-if="dongCode" :dongCode="dongCode" />
   </div>
 </template>
 
