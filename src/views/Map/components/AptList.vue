@@ -1,6 +1,6 @@
 <template>
   <div class="apt-list">
-    <div v-for="apt in dealList" :key="apt.aptSeq" class="apt-item" @click="$emit('select', apt)">
+    <div v-for="apt in dealList" :key="apt.aptSeq" class="apt-item" @click="selectApt(apt)">
       <div class="apt-main">
         <div class="apt-info">
           <div class="apt-name">{{ apt.aptNm }}</div>
@@ -23,7 +23,13 @@
 </template>
 
 <script setup>
-defineProps({ dealList: Array })
+import { useMapStore } from '@/stores/mapStore'
+const mapStore = useMapStore()
+const dealList = mapStore.dealList
+
+function selectApt(apt) {
+  mapStore.setSelectedApt(apt.aptSeq)
+}
 
 function formatPrice(amount) {
   const hundredMillions = Math.floor(amount / 10000)

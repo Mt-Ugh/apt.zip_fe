@@ -4,28 +4,28 @@
 
     <div class="main-content">
       <div class="map-section">
-        <KakaoMap :selectedApt="selectedApt" />
+        <KakaoMap :selectedApt="mapStore.selectedApt" />
         <AptDetailCard
-          v-if="selectedApt"
-          :aptSeq="selectedApt"
-          :key="selectedApt"
-          @close="selectedApt = null"
+          v-if="mapStore.selectedApt"
+          :aptSeq="mapStore.selectedApt"
+          :key="mapStore.selectedApt"
+          @close="mapStore.setSelectedApt(null)"
         />
       </div>
 
       <Transition name="apt-slide">
-        <div class="apt-list-area-overlay" v-if="dealList.length > 0">
-          <AptList :dealList="dealList" @select="handleSelectApt" />
+        <div class="apt-list-area-overlay" v-if="mapStore.dealList.length > 0">
+          <AptList :dealList="mapStore.dealList" @select="handleSelectApt" />
         </div>
       </Transition>
     </div>
 
-    <ReviewSection v-if="dongCode" :dongCode="dongCode" />
+    <ReviewSection v-if="mapStore.dongCode" :dongCode="mapStore.dongCode" />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useMapStore } from '@/stores/mapStore' // Pinia store import
 
 import SearchBar from './components/SearchBar.vue'
 import AptList from './components/AptList.vue'
@@ -33,20 +33,18 @@ import KakaoMap from './components/KakaoMap.vue'
 import AptDetailCard from './components/AptDetailCard.vue'
 import ReviewSection from './components/ReviewSection.vue'
 
-const dealList = ref([])
-const selectedApt = ref(null)
-const dongCode = ref('')
+const mapStore = useMapStore()
 
 function handleSearchResult({ list, code }) {
-  dealList.value = list
-  selectedApt.value = null
-  dongCode.value = code
+  mapStore.setDealList(list)
+  mapStore.setSelectedApt(null)
+  mapStore.setDongCode(code)
   console.log('검색 결과:', list)
   console.log('선택된 동 코드:', code)
 }
 
 function handleSelectApt(select) {
-  selectedApt.value = select.aptSeq
+  mapStore.setSelectedApt(select.aptSeq)
   console.log('선택된 아파트:', select.aptSeq)
 }
 </script>

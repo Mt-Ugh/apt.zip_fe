@@ -48,8 +48,9 @@ import { ref, onMounted } from 'vue'
 import { fetchSidoList, fetchGugunList, fetchDongList, fetchAptList } from '@/api/DealMap'
 import CommonModal from '@/components/common/CommonModal.vue'
 import SearchIcon from '@/assets/images/Common/SearchIcon.svg'
+import { useMapStore } from '@/stores/mapStore'
 
-const emit = defineEmits(['search'])
+const mapStore = useMapStore()
 
 const showModal = ref(false)
 const modalTitle = ref('')
@@ -96,10 +97,9 @@ async function searchAptList() {
   if (!result || result.length === 0) {
     openModal('검색 결과 없음', '해당 지역에 아파트 검색 결과가 없습니다.')
   } else {
-    emit('search', {
-      list: result,
-      code: dong.value,
-    })
+    mapStore.setDealList(result)
+    mapStore.setDongCode(dong.value)
+    mapStore.setSelectedApt(null)
   }
 }
 
@@ -110,10 +110,9 @@ function resetAll() {
   keyword.value = ''
   gugunList.value = []
   dongList.value = []
-  emit('search', {
-    list: [],
-    code: null,
-  })
+  mapStore.setDealList([])
+  mapStore.setDongCode(null)
+  mapStore.setSelectedApt(null)
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="detail-card" v-if="aptDetail.aptNm">
-    <button class="close-button" @click="$emit('close')">×</button>
+    <button class="close-button" @click="closeDetail">×</button>
 
     <h2 class="apt-name">{{ aptDetail.aptNm }}</h2>
 
@@ -87,19 +87,19 @@
 </template>
 
 <script setup>
-import { ref, watch, toRef } from 'vue'
+import { ref, watch } from 'vue'
 import { fetchAptDetail } from '@/api/DealMap'
 import Pin from '@/assets/images/Map/Pin.svg'
 import Tool from '@/assets/images/Map/Tool.svg'
 import Total from '@/assets/images/Map/Total.svg'
 import Won from '@/assets/images/Map/Won.svg'
+import { useMapStore } from '@/stores/mapStore'
 
-const props = defineProps({ aptSeq: String })
-const aptSeqRef = toRef(props, 'aptSeq')
+const mapStore = useMapStore()
 const aptDetail = ref({})
 
 watch(
-  aptSeqRef,
+  () => mapStore.selectedApt,
   async (newSeq) => {
     if (newSeq) {
       const result = await fetchAptDetail(newSeq)
@@ -113,6 +113,10 @@ watch(
   },
   { immediate: true },
 )
+
+function closeDetail() {
+  mapStore.setSelectedApt(null)
+}
 
 function formatPrice(amount) {
   if (isNaN(amount)) return '정보 없음'

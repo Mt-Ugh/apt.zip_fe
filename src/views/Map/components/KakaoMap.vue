@@ -5,6 +5,10 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useKakaoLoader } from '@/composables/useKakaoLoader'
+import { useMapStore } from '@/stores/mapStore'
+
+const mapStore = useMapStore()
+// selectedApt prop 제거
 
 function initMap() {
   console.log('✅ initMap 실행됨')
