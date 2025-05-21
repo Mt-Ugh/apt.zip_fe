@@ -24,7 +24,7 @@
 
     <div class="form-group">
       <label for="content">내용</label>
-      <textarea id="content" v-model="content" rows="10" placeholder="내용을 입력하세요" maxlength="255"></textarea>
+      <textarea id="content" v-model="content" rows="10" placeholder="내용을 입력하세요" maxlength="10000"></textarea>
     </div>
 
     <button class="regist-btn" @click="handleQnARegist">등록</button>
@@ -44,7 +44,7 @@ import { useRouter } from 'vue-router'
 import CommonModal from '@/components/common/CommonModal.vue'
 import { registerQnA } from '@/api/QnA'
 import BackIcon from '@/assets/images/Common/BackIcon.png'
-import { QnACategory } from '@/constants/category.js'  // 카테고리 상수 파일 임포트
+import { QnACategory } from '@/constants/category.js' 
 
 const router = useRouter()
 
@@ -69,14 +69,14 @@ const goBack = () => {
 watch(title, (newVal) => {
   if (newVal.length >= 255) {
     showModalError('입력 제한', '제목은 255자를 넘을 수 없습니다.')
-    title.value = newVal.slice(0, 255) // 자동으로 255자까지만 유지
+    title.value = newVal.slice(0, 255) 
   }
 })
 
 watch(content, (newVal) => {
-  if (newVal.length >= 255) {
-    showModalError('입력 제한', '내용은 255자를 넘을 수 없습니다.')
-    content.value = newVal.slice(0, 255)
+  if (newVal.length >= 10000) {
+    showModalError('입력 제한', '내용은 10,000자를 넘을 수 없습니다.')
+    content.value = newVal.slice(0, 10000)
   }
 })
 

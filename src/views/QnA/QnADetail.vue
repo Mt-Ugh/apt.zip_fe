@@ -30,7 +30,7 @@
 
     <section class="answer-input">
       <label for="answer">답변 작성</label>
-      <textarea id="answer" rows="5" v-model="answer" placeholder="내용을 입력하세요" maxlength="255"></textarea>
+      <textarea id="answer" rows="5" v-model="answer" placeholder="내용을 입력하세요" maxlength="10000"></textarea>
       <button class="submit-btn" @click="submitAnswer">전달</button>
     </section>
   </div>
@@ -112,9 +112,9 @@ function formatDate(dateString) {
 }
 
 watch(answer, (newVal) => {
-  if (newVal.length >= 255) {
-    showModalError('입력 제한', '답변은 255자를 넘을 수 없습니다.')
-    answer.value = newVal.slice(0, 255)
+  if (newVal.length >= 10000) {
+    showModalError('입력 제한', '답변은 10,000자를 넘을 수 없습니다.')
+    answer.value = newVal.slice(0, 10000)
   }
 })
 
