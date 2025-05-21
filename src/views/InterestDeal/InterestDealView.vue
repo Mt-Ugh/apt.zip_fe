@@ -5,33 +5,59 @@
         <h2 class="title">관심거래</h2>
         <div v-if="selectedDeals.length > 0" class="delete-button-container">
           <button @click="deleteSelectedDeals" class="delete-button">
-            선택 삭제 ({{ selectedDeals.length }})
+            <svg width="18" height="18" viewBox="0 0 18 18" style="vertical-align:middle; margin-right:6px;">
+              <polyline points="4,10 8,15 15,4" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{ selectedDeals.length }}개 삭제
           </button>
         </div>
       </div>
       <div class="deals-list">
-        <div v-for="(deal, index) in deals" :key="index" class="deal-wrapper">
-          <div class="deal-item">
-            <div class="checkbox-wrapper">
-              <input 
-                type="checkbox" 
-                :value="index"
-                v-model="selectedDeals"
-                @click.stop
-                class="deal-checkbox"
-              >
+        <div
+          v-for="(deal, index) in deals"
+          :key="deal.saleUuid"
+          class="deal-wrapper"
+        >
+          <div
+            class="deal-item"
+            :class="{ selected: selectedDeals.includes(index) }"
+          >
+            <div class="checkbox-wrapper" @click.stop>
+              <label class="custom-checkbox-label">
+                <input
+                  type="checkbox"
+                  :value="index"
+                  v-model="selectedDeals"
+                  class="custom-checkbox"
+                />
+                <span class="custom-checkbox-box">
+                  <svg v-if="selectedDeals.includes(index)" width="16" height="16" viewBox="0 0 16 16">
+                    <polyline points="3,9 7,13 13,4" fill="none" stroke="#27ae60" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </label>
             </div>
-            <div class="deal-content" @click="toggleDealDetails(index)">
+            <div class="deal-content" @click="toggleDealSelection(index)">
               <div class="deal-info">
                 <div class="deal-left">
-                  <span class="deal-type">{{ deal.type }}</span>
-                  <span class="deal-address">{{ deal.address }}</span>
+                  <span class="deal-type">{{ deal.aptNm }}</span>
+                  <span class="deal-address">
+                    {{ deal.sidoName }} {{ deal.gugunName }} {{ deal.dongName }} {{ deal.jibun }}
+                  </span>
                 </div>
                 <div class="deal-right">
-                  <span class="deal-price">{{ deal.price }}만원</span>
-                  <div class="toggle-icon" :class="{ 'rotated': openDeals[index] }">
-                    <span v-if="openDeals[index]">▲</span>
-                    <span v-else>▼</span>
+                  <span class="deal-price">{{ formatAmount(deal.dealAmount) }}</span>
+                  <div
+                    class="toggle-icon"
+                    :class="{ rotated: openDeals[index] }"
+                    @click.stop="toggleDealDetails(index)"
+                  >
+                    <svg v-if="openDeals[index]" width="18" height="18" viewBox="0 0 18 18">
+                      <polyline points="4,11 9,6 14,11" fill="none" stroke="#222" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <svg v-else width="18" height="18" viewBox="0 0 18 18">
+                      <polyline points="4,7 9,12 14,7" fill="none" stroke="#222" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                   </div>
                 </div>
               </div>
@@ -39,7 +65,7 @@
           </div>
           <!-- 지도 컨테이너 -->
           <div v-show="openDeals[index]" class="map-container">
-            <div :id="'map-' + index" class="map" ref="mapRefs"></div>
+            <div :id="'map-' + index" class="map"></div>
           </div>
         </div>
       </div>
@@ -48,97 +74,144 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+import { IterestDealList, deleteInterestDeals } from '@/api/InterestDeal'
 
-// 관심 거래 데이터
-const deals = ref([
-  {
-    type: '삼화고려아파트',
-    address: '부산광역시 금사구 중동동 1627-5',
-    price: '8,100'
-  },
-  {
-    type: '삼화고려아파트',
-    address: '부산광역시 금사구 중동동 1627-5',
-    price: '8,100'
-  },
-  {
-    type: '삼화고려아파트',
-    address: '부산광역시 금사구 중동동 1627-5',
-    price: '8,100'
-  }
-])
+const KAKAO_MAP_API_KEY = import.meta.env.VITE_KAKAO_MAP_API_KEY
 
-// 선택된 거래 아이템 관리
+const deals = ref([])
+const openDeals = ref({})
 const selectedDeals = ref([])
 
-// 각 거래 아이템의 열림/닫힘 상태 관리
-const openDeals = ref({})
+// 가격 포맷 함수
+function formatAmount(amount) {
+  if (typeof amount !== 'number') return ''
+  if (amount >= 10000) {
+    const eok = Math.floor(amount / 10000)
+    const man = amount % 10000
+    if (man === 0) {
+      return `${eok}억`
+    }
+    return `${eok}억 ${man.toLocaleString('ko-KR')} 만원`
+  }
+  return amount.toLocaleString('ko-KR') + ' 만원'
+}
 
-// 거래 상세 정보 토글 함수
-const toggleDealDetails = (index) => {
-  // Vue의 반응성을 위해 새로운 객체를 생성하여 할당
+function loadKakaoMapScript() {
+  return new Promise((resolve, reject) => {
+    if (window.kakao && window.kakao.maps) {
+      resolve()
+      return
+    }
+    const existingScript = document.getElementById('kakao-map-script')
+    if (existingScript) {
+      existingScript.onload = resolve
+      return
+    }
+    const script = document.createElement('script')
+    script.id = 'kakao-map-script'
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_API_KEY}&autoload=false`
+    script.onload = () => {
+      window.kakao.maps.load(resolve)
+    }
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+}
+
+// li 클릭 시 선택 토글
+const toggleDealSelection = (index) => {
+  const idx = selectedDeals.value.indexOf(index)
+  if (idx === -1) {
+    selectedDeals.value.push(index)
+  } else {
+    selectedDeals.value.splice(idx, 1)
+  }
+}
+
+// 더보기(v) 클릭 시 지도 토글
+const toggleDealDetails = async (index) => {
   const newOpenDeals = { ...openDeals.value }
   newOpenDeals[index] = !newOpenDeals[index]
   openDeals.value = newOpenDeals
 
-  // 지도 초기화 로직
-  if (newOpenDeals[index] && window.kakao && window.kakao.maps) {
-    setTimeout(() => {
-      const mapContainer = document.getElementById(`map-${index}`)
-      if (mapContainer) {
-        const options = {
-          center: new window.kakao.maps.LatLng(35.1795543, 129.0756416),
-          level: 3
-        }
-        new window.kakao.maps.Map(mapContainer, options)
+  if (newOpenDeals[index]) {
+    await loadKakaoMapScript()
+    await nextTick()
+    const mapContainer = document.getElementById(`map-${index}`)
+    const deal = deals.value[index]
+    if (mapContainer && deal && deal.latitude && deal.longitude) {
+      const { latitude, longitude } = deal
+      const options = {
+        center: new window.kakao.maps.LatLng(latitude, longitude),
+        level: 3
       }
-    }, 0)
+      const map = new window.kakao.maps.Map(mapContainer, options)
+      new window.kakao.maps.Marker({
+        map,
+        position: new window.kakao.maps.LatLng(latitude, longitude)
+      })
+    }
   }
 }
 
-// 선택된 거래 삭제
-const deleteSelectedDeals = () => {
-  // 선택된 인덱스를 내림차순으로 정렬하여 삭제
-  const sortedIndexes = [...selectedDeals.value].sort((a, b) => b - a)
-  sortedIndexes.forEach(index => {
-    deals.value.splice(index, 1)
-  })
-  selectedDeals.value = [] // 선택 초기화
-  openDeals.value = {} // 열린 상태 초기화
+// 다중 삭제
+const deleteSelectedDeals = async () => {
+  const saleUuids = selectedDeals.value.map(idx => deals.value[idx].saleUuid)
+  if (saleUuids.length === 0) return
+  try {
+    await deleteInterestDeals(saleUuids)
+    deals.value = deals.value.filter((deal, idx) => !selectedDeals.value.includes(idx))
+    selectedDeals.value = []
+    openDeals.value = {}
+  } catch (e) {
+    alert('삭제 실패: ' + (e.message || ''))
+  }
 }
+
+// 관심거래 리스트 API 호출
+const fetchDeals = async () => {
+  const res = await IterestDealList()
+  deals.value = res
+}
+
+onMounted(() => {
+  fetchDeals()
+  loadKakaoMapScript().catch(() => {})
+})
 </script>
 
 <style scoped>
 .interest-deal-view {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 140px 0;
-  min-height: calc(100vh - 280px); /* header/footer 고려한 최소 높이 */
+  padding: 100px 0;
+  min-height: 1090px;
 }
 
 .content-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: bold;
+  color: #333;
 }
 
 .deals-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
 }
 
 .deal-wrapper {
@@ -147,26 +220,76 @@ const deleteSelectedDeals = () => {
 }
 
 .deal-item {
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  background: #f6f4ef;
+  /* border 제거 */
+  border: none;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  min-height: 72px;
+  box-shadow: 0 2px 8px 0 rgba(30,40,60,0.03);
+  transition: 
+    box-shadow 0.2s,
+    background 0.2s;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.deal-item.selected {
+  /* 선택된 항목만 테두리와 배경 강조 */
+  box-shadow: 0 6px 24px 0 rgba(30,40,60,0.13);
+  background: #e3e0d9;
+}
+
+.deal-item:hover {
+  background: #edeae3;
+  box-shadow: 0 6px 24px 0 rgba(30,40,60,0.10);
+}
+
+.checkbox-wrapper {
+  padding: 0 12px;
   display: flex;
   align-items: center;
 }
 
-.checkbox-wrapper {
-  padding: 0 15px;
+.custom-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
-.deal-checkbox {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
+.custom-checkbox {
+  display: none;
+}
+
+.custom-checkbox-box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  background: #edeae3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.custom-checkbox:checked + .custom-checkbox-box {
+  border-color: #bdb8a9;
+  background: #d3cfc3;
+}
+
+.custom-checkbox-box svg {
+  display: block;
+  /* 체크 표시 색상 li 배경과 어울리게 */
+  stroke: #bdb8a9;
 }
 
 .deal-content {
   flex: 1;
-  padding: 15px 20px;
+  padding: 16px 22px;
   cursor: pointer;
+  position: relative;
 }
 
 .deal-info {
@@ -178,35 +301,47 @@ const deleteSelectedDeals = () => {
 
 .deal-left {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   align-items: center;
+}
+
+.deal-type {
+  font-weight: bold;
+  color: #333;
+  font-size: 18px;
+}
+
+.deal-address {
+  color: #555;
+  font-size: 14px;
+}
+
+.deal-saleuuid {
+  color: #888;
+  font-size: 12px;
 }
 
 .deal-right {
   display: flex;
   align-items: center;
-  gap: 20px;
-}
-
-.deal-type {
-  font-weight: bold;
-}
-
-.deal-address {
-  color: #666;
+  gap: 16px;
 }
 
 .deal-price {
   font-weight: bold;
-  color: #1a73e8;
+  color: #222;
   font-size: 16px;
 }
 
 .toggle-icon {
-  color: #666;
   width: 20px;
+  height: 20px;
   text-align: center;
   transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .toggle-icon.rotated {
@@ -215,20 +350,26 @@ const deleteSelectedDeals = () => {
 
 .map-container {
   margin-top: 1px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  overflow: hidden;
+  background-color: #d3cfc3;
+  border-radius: 0 0 14px 14px;
+  overflow: visible;
   transition: all 0.3s ease;
+  border-top: 1px solid #bdb8a9;
 }
 
 .map {
   width: 100%;
-  height: 300px;
+  min-height: 200px;
+  height: 200px;
+  background: #e6eaf3;
+  border-radius: 0 0 14px 14px;
+  z-index: 1;
 }
 
 .delete-button-container {
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .delete-button {
@@ -240,9 +381,20 @@ const deleteSelectedDeals = () => {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.delete-button svg {
+  margin-right: 4px;
+}
+
+.delete-button svg polyline {
+  stroke: #fff;
 }
 
 .delete-button:hover {
   background-color: #c82333;
 }
-</style> 
+</style>
