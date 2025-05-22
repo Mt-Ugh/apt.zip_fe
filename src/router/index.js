@@ -5,6 +5,7 @@ import HomeView from '@/views/Home/HomeView.vue'
 import QnAView from '@/views/QnA/QnAView.vue'
 import QnADetail from '@/views/QnA/QnADetail.vue'
 import QnARegist from '@/views/QnA/QnARegist.vue'
+import NewsView from '@/views/News/NewsView.vue'
 
 const routes = [
   {
@@ -36,6 +37,10 @@ const routes = [
     path: '/qna/regist',
     name: 'QnARegist',
     component: QnARegist,
+  },
+    path: '/news',
+    name: 'NewsView',
+    component: NewsView,
   },
 ]
 
