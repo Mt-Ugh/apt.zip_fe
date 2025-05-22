@@ -11,7 +11,7 @@
 </template>
 <style scoped>
 .sidebar {
-  width: 400px;
+  width: 420px;
   background: #f8fafc;
   padding: 100px 10px 0 30px;
   border-right: 1px solid #eee;
@@ -19,11 +19,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  z-index: 10;
 }
 .menu {
   width: auto;
-  min-width: 340px;
-  max-width: 90%;
+  min-width: 350px;
+  max-width: 95%;
   padding: 18px 0 18px 30px;
   font-size: 16px;
   color: #6b6b6b;
@@ -36,5 +37,17 @@
   background: #eaf6ff;
   color: #222;
   border-radius: 8px;
+}
+
+@media (max-width: 1600px) {
+  .sidebar {
+    width: 300px;
+    padding-left: 10px;
+  }
+  .menu {
+    min-width: 270px;
+    font-size: 14px;
+    margin-left: 3px;
+  }
 }
 </style>

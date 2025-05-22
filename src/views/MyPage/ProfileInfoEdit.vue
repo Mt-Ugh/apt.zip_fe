@@ -1,5 +1,5 @@
 <template>
-  <form class="profile-content" @submit.prevent="submit">
+<form class="profile-content profile-content-fixed-height" @submit.prevent="submit">
     <h2 class="profile-title">회원 정보 수정</h2>
     <div class="profile-title-underline"></div>
     <div class="profile-flex">
@@ -26,28 +26,33 @@
         </div>
         <div>
           <label>전화 번호</label>
-          <input type="text" :value="form.phone" readonly />
+          <input type="text" :value="form.phoneNumber" readonly />
         </div>
       </div>
       <div class="profile-image-area">
-        <img class="profile-image" :src="DefaultProfile" alt="profile" />
+        <img
+          class="profile-image"
+          :class="{ 'has-profile': !!form.profileUrl }"
+          :src="form.profileUrl ? form.profileUrl : DefaultProfile"
+          alt="profile"
+        />
       </div>
     </div>
-    <div class="profile-actions">
-      <button type="submit" class="confirm-btn">확인</button>
-      <button type="button" class="withdraw-btn" @click="$emit('withdraw')">회원탈퇴</button>
-    </div>
+<div class="profile-actions">
+  <button type="submit" class="confirm-btn">확인</button>
+</div>
+<button type="button" class="withdraw-btn fixed-withdraw" @click="$emit('withdraw')">회원탈퇴</button>
   </form>
 </template>
 <script setup>
 import { reactive, watch } from 'vue'
 import DefaultProfile from '@/assets/images/Common/DefaultProfile.svg'
-const props = defineProps({ user: Object })
-const emit = defineEmits(['update', 'withdraw', 'cancel'])
-const form = reactive({ ...props.user })
+const { user } = defineProps({ user: Object })
+const emit = defineEmits(['withdraw', 'cancel', 'update'])
+const form = reactive({ ...user })
 
 watch(
-  () => props.user,
+  () => user,
   (val) => Object.assign(form, val),
 )
 
@@ -57,15 +62,21 @@ function submit() {
 </script>
 <style scoped>
 .profile-content {
-  width: 900px;
+  width: 700px;
   background: #fff;
   border-radius: 12px;
-  padding: 60px 70px 0 70px;
+  padding: 40px 36px 0 36px;
   box-shadow: 0 2px 8px #7a7a7a;
   position: relative;
   min-height: 700px;
   display: flex;
   flex-direction: column;
+  transition: width 0.2s, padding 0.2s;
+}
+.profile-content-fixed-height {
+  min-height: 800px;
+  height: 800px;
+  box-sizing: border-box;
 }
 .profile-title {
   font-size: 28px;
@@ -86,14 +97,15 @@ function submit() {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 40px;
+  gap: 24px;
+  padding-left: 10px;
 }
 .profile-info {
-  margin: 20px 0 0 20px;
+  margin: 10px 0 10px 10px;
   flex: 1;
 }
 .profile-info > div {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 .profile-info label {
   font-size: 14px;
@@ -108,7 +120,7 @@ function submit() {
   margin-bottom: 2px;
 }
 .profile-info input {
-  width: 100%;
+  width: 95%;
   padding: 8px 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -120,40 +132,206 @@ function submit() {
   background: #f5f5f5;
   color: #888;
 }
+.profile-image {
+  width: 163px;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  /* 기본(DefaultProfile) 스타일 */
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  transition: border 0.2s, box-shadow 0.2s, background 0.2s, border-radius 0.2s;
+}
+/* 프로필 이미지가 있을 때만 강조 스타일 */
+.profile-image.has-profile {
+  border: 4px solid #fff;
+  box-shadow: 0 2px 12px rgba(30,40,60,0.13);
+  background: linear-gradient(135deg, #eaf6ff 0%, #f5f7fa 100%);
+  border-radius: 24px;
+}
+/* profile-image-area는 항상 동일하게 유지 */
 .profile-image-area {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  min-width: 120px;
-  margin: 10px 30px;
-}
-.profile-image {
-  width: 110px;
-  height: 110px;
-  display: block;
+  min-width: 130px;
+  margin: 20px 0 0 0;
+  height: 180px;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 .profile-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin: 60px 0 30px 0;
+  gap: 12px;
+  margin: 32px 0 10px 0;
+}
+.fixed-withdraw {
+  position: absolute;
+  right: 78px;
+  bottom: 85px;
+  background: #fff0f0;
+  color: #e00;
+  border: 1px solid #e00;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 2;
 }
 .confirm-btn {
-  margin-top: 30px;
-  padding: 10px 30px;
-  border-radius: 20px;
+  padding: 8px 22px;
+  border-radius: 18px;
   border: none;
   background: #222;
   color: #fff;
   cursor: pointer;
+  font-size: 15px;
 }
 .withdraw-btn {
   background: #fff0f0;
   color: #e00;
   border: 1px solid #e00;
   border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 14px;
+  padding: 7px 14px;
+  font-size: 13px;
   cursor: pointer;
+}
+
+@media (max-width: 2000px) {
+  .profile-content {
+    width: 520px;
+    padding: 28px 18px 0 18px;
+    min-height: 600px;
+  }
+  .profile-content-fixed-height {
+    min-height: 650px;
+    height: 650px;
+  }
+  .profile-title {
+    font-size: 22px;
+  }
+  .profile-title-underline {
+    margin-bottom: 18px;
+    margin-top: 6px;
+  }
+  .profile-flex {
+    gap: 12px;
+    padding-left: 10px;
+  }
+  .profile-info {
+    margin: 6px 0 0 4px;
+  }
+  .profile-info > div {
+    margin-bottom: 14px;
+  }
+  .profile-info label {
+    font-size: 12px;
+  }
+  .profile-info input {
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+  .profile-value {
+    font-size: 13px;
+    padding-top: 6px;
+    padding-left: 6px;
+  }
+  .profile-image {
+    width: 150px;
+    height: 160px;
+    border-radius: 80%;
+  }
+  .profile-actions {
+    margin: 18px 0 6px 0;
+  }
+  .fixed-withdraw {
+    right: 62px;
+    bottom: 113px;
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+  .confirm-btn {
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 14px;
+  }
+  .withdraw-btn {
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+}
+@media (max-width: 1600px) {
+  .profile-content {
+    width: 420px;
+    padding: 22px 10px 0 10px;
+    min-height: 500px;
+  }
+  .profile-content-fixed-height {
+    min-height: 520px;
+    height: 520px;
+  }
+  .profile-title {
+    font-size: 20px;
+  }
+  .profile-title-underline {
+    margin-bottom: 28px;
+    margin-top: 5px;
+  }
+  .profile-flex {
+    gap: 8px;
+    padding-left: 0;
+  }
+  .profile-info {
+    margin: 4px 0 0 2px;
+  }
+  .profile-info > div {
+    margin-bottom: 12px;
+  }
+  .profile-info label {
+    font-size: 13px;
+  }
+  .profile-info input {
+    font-size: 14px;
+    padding: 7px 9px;
+  }
+  .profile-image {
+    width: 150px;
+    height: 160px;
+    border-radius: 80%;
+  }
+  .profile-image-area {
+    min-width: 120px;
+    margin: 17px 60px;
+  }
+    .profile-image {
+    width: 150px;
+    height: 160px;
+    border-radius: 80%;
+  }
+  .profile-actions {
+    margin: 18px 0 6px 0;
+  }
+  .fixed-withdraw {
+    right: 50px;
+    bottom: 23px;
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  .confirm-btn {
+    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 12px;
+  }
+  .withdraw-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
 }
 </style>
