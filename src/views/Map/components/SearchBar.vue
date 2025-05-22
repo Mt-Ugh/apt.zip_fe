@@ -195,6 +195,9 @@ button {
   cursor: pointer;
   transition: 0.2s;
   height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button:hover {

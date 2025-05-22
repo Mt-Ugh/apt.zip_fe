@@ -1,19 +1,24 @@
 <template>
   <div id="map" class="map-container"></div>
+  <CommercialPlace class="commacial-palce" @show-places="showCommercialPins" />
 </template>
 
 <script setup>
 import { onMounted, watch, ref } from 'vue'
 import { useKakaoLoader } from '@/composables/useKakaoLoader'
 import { useMapStore } from '@/stores/mapStore'
+import CommercialPlace from './CommercialPlace.vue'
 
 const mapStore = useMapStore()
 const mapRef = ref(null)
 const markers = ref([])
 const overlays = ref([])
+const commercialMarkers = ref([])
+const isCommercialMode = ref(false)
 
 function moveMapToAddress(address) {
   const kakao = window.kakao
+
   if (!kakao || !kakao.maps || !mapRef.value) return
   const geocoder = new kakao.maps.services.Geocoder()
   geocoder.addressSearch(address, function (result, status) {
@@ -21,7 +26,6 @@ function moveMapToAddress(address) {
       const coords = new kakao.maps.LatLng(result[0].y, result[0].x)
       mapRef.value.setCenter(coords)
       mapRef.value.setLevel(5)
-      new kakao.maps.Marker({ map: mapRef.value, position: coords })
     }
   })
 }
@@ -38,14 +42,33 @@ function initMap() {
   mapRef.value = map
 }
 
+function clearCommercialOverlays() {
+  if (window.commercialOverlays && window.commercialOverlays.length) {
+    for (let i = 0; i < window.commercialOverlays.length; i++) {
+      window.commercialOverlays[i].setMap(null)
+    }
+    window.commercialOverlays.length = 0
+  } else {
+    window.commercialOverlays = []
+  }
+}
+
 function clearMarkers() {
   markers.value.forEach((marker) => marker.setMap(null))
   markers.value = []
   overlays.value.forEach((overlay) => overlay.setMap(null))
   overlays.value = []
+  clearCommercialMarkers()
+  clearCommercialOverlays()
+}
+
+function clearCommercialMarkers() {
+  commercialMarkers.value.forEach((marker) => marker.setMap(null))
+  commercialMarkers.value = []
 }
 
 async function addAptMarkers(aptList) {
+  if (isCommercialMode.value) return
   const kakao = window.kakao
   if (!kakao || !kakao.maps || !mapRef.value) return
   clearMarkers()
@@ -99,8 +122,50 @@ async function addAptMarkers(aptList) {
   }
 }
 
+function showCommercialPins(placeList) {
+  const kakao = window.kakao
+
+  if (!kakao || !kakao.maps || !mapRef.value) return
+
+  isCommercialMode.value = true
+  mapStore.setSelectedApt(null)
+  mapStore.setDealList([])
+  markers.value.forEach((marker) => marker.setMap(null))
+  markers.value = []
+  overlays.value.forEach((overlay) => overlay.setMap(null))
+  overlays.value = []
+  clearCommercialMarkers()
+
+  if (window.commercialOverlays) {
+    window.commercialOverlays.forEach((o) => o.setMap(null))
+  }
+  window.commercialOverlays = []
+  setTimeout(() => {
+    for (const place of placeList) {
+      const lat = Number(place.latitude)
+      const lng = Number(place.longitude)
+      if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+        const marker = new kakao.maps.Marker({
+          map: mapRef.value,
+          position: new kakao.maps.LatLng(lat, lng),
+          title: place.place_name,
+        })
+        commercialMarkers.value.push(marker)
+        const overlay = new kakao.maps.CustomOverlay({
+          position: marker.getPosition(),
+          content: `<div class='commercial-label'>${place.placeName}</div>`,
+          yAnchor: 2.1,
+        })
+        overlay.setMap(mapRef.value)
+        window.commercialOverlays.push(overlay)
+      }
+    }
+  }, 0)
+}
+
 function moveMapToApt(apt) {
   const kakao = window.kakao
+
   if (!kakao || !kakao.maps || !mapRef.value) return
   if (apt.latitude && apt.longitude) {
     const coords = new kakao.maps.LatLng(apt.latitude, apt.longitude)
@@ -135,7 +200,10 @@ onMounted(() => {
       () => mapStore.dealList,
       (aptList) => {
         if (Array.isArray(aptList) && aptList.length > 0) {
+          isCommercialMode.value = false
+          clearCommercialMarkers()
           addAptMarkers(aptList)
+          moveMapToApt(aptList[0])
         } else {
           clearMarkers()
         }
@@ -182,6 +250,26 @@ onMounted(() => {
   transition:
     box-shadow 0.2s,
     background 0.2s;
+  z-index: 10;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.commercial-label {
+  background: rgba(255, 255, 255, 0.93);
+  border: 1.2px solid #ff8000;
+  border-radius: 7px;
+  padding: 2.5px 8px;
+  font-size: 13px;
+  color: #ff8000;
+  font-weight: 500;
+  box-shadow: 0 1.5px 6px rgba(255, 128, 0, 0.08);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 0.01em;
+  margin-bottom: 9px;
+  opacity: 0.93;
   z-index: 10;
   position: relative;
   left: 50%;
