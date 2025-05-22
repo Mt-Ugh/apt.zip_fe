@@ -24,7 +24,7 @@ const routes = [
     path: '/interestDeal',
     name: 'InterestDeal',
     component: InterestDeal,
-  }
+  },
 ]
 
 const router = createRouter({
