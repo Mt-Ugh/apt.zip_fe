@@ -36,21 +36,20 @@ pipeline {
         stage('Vue Build') {
             steps {
                 script {
-                    docker.image('node:18').inside('-u root:root') {
+                    docker.image('node:18').inside('-u root:root -v $PWD/.env:/app/.env -w /app') {
                         sh '''
-                            echo "== 빌드 컨테이너 내부에서 .env 복사 =="
-                            cp ../.env . || (echo "❌ .env 복사 실패" && exit 1)
-
-                            echo "== 의존성 설치 =="
+                            echo "== .env 파일 존재 확인 =="
+                            [ -f .env ] || (echo "❌ .env 파일 없음" && exit 1)
+        
+                            echo "== Vue 앱 빌드 =="
                             npm ci
-
-                            echo "== Vue 앱 빌드 시작 =="
                             npm run build
                         '''
                     }
                 }
             }
         }
+
 
         stage('Send Files to Remote Server') {
             steps {
