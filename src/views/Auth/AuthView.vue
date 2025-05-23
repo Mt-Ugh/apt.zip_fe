@@ -104,7 +104,7 @@ import { signin, signup, getGoogleLoginUrl } from '@/api/Auth'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import CommonModal from '@/components/common/CommonModal.vue'
-import AuthBackground from '@/assets/images/Auth/Authbackground.jpg'
+import AuthBackground from '@/assets/images/Auth/AuthBackground.jpg'
 import GoogleSignin from '@/assets/images/Auth/GoogleSignin.svg'
 
 const router = useRouter()
