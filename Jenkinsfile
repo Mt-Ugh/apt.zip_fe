@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Git Clone') {
             steps {
-                git branch: 'main', url: 'https://github.com/Mt-Ugh/apt.zip_fe.git'
+                git branch: 'deploy', url: 'https://github.com/Mt-Ugh/apt.zip_fe.git'
             }
         }
 
