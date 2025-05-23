@@ -38,10 +38,12 @@ pipeline {
                 script {
                     docker.image('node:18').inside('-u root:root -v $PWD/.env:/app/.env -w /app') {
                         sh '''
-                            echo "== .env 파일 존재 확인 =="
-                            [ -f .env ] || (echo "❌ .env 파일 없음" && exit 1)
+                            echo "== .env 확인 =="
+                            [ -f .env ] || (echo "❌ .env 없음" && exit 1)
         
-                            echo "== Vue 앱 빌드 =="
+                            echo "== .env 내용 =="
+                            cat .env
+        
                             npm ci
                             npm run build
                         '''
@@ -49,7 +51,6 @@ pipeline {
                 }
             }
         }
-
 
         stage('Send Files to Remote Server') {
             steps {
