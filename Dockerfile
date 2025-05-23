@@ -1,7 +1,12 @@
-FROM nginx:stable-alpine
+# Vue 앱 빌드
+FROM node:20-alpine AS build
 WORKDIR /app
+COPY . .
+RUN npm install && npm run build
 
-COPY dist /usr/share/nginx/html
+# Nginx로 정적 파일 서빙
+FROM nginx:stable-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
