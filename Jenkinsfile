@@ -30,33 +30,12 @@ pipeline {
             }
         }
 
-        // ← 기존 'Vue Build' 와 이름이 겹치지 않도록 변경
-        stage('Install & Build Vue') {
-            steps {
-                script {
-                    docker.image('node:18').inside("-u root:root -v ${WORKSPACE}/.env:/app/.env -w /app") {
-                        sh '''
-                            echo "== /app 디렉토리 파일 목록 =="
-                            ls -al /app
-
-                            echo "== 컨테이너 내 .env 내용 =="
-                            cat /app/.env
-
-                            npm ci --prefer-offline --no-audit
-                            npm run build -- --mode production
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Send Files to Remote') {
+        stage('Transfer Source to Remote') {
             steps {
                 sh """
-                    ssh ${REMOTE_USER}@${REMOTE_HOST} 'mkdir -p ${REMOTE_PATH}'
-                    scp -r dist ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/dist
-                    scp Dockerfile ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/Dockerfile
-                    scp nginx.conf ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/nginx.conf
+                    echo "📤 원격 서버에 소스코드 전송 중..."
+                    ssh ${REMOTE_USER}@${REMOTE_HOST} 'rm -rf ${REMOTE_PATH} && mkdir -p ${REMOTE_PATH}'
+                    scp -r . ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}
                 """
             }
         }
@@ -64,15 +43,25 @@ pipeline {
         stage('Remote Docker Build & Run') {
             steps {
                 sh """
+                    echo "🐳 원격 서버에서 Vue 앱 빌드 및 컨테이너 실행"
                     ssh ${REMOTE_USER}@${REMOTE_HOST} '
                         cd ${REMOTE_PATH} &&
                         docker stop ${APP_NAME} || true &&
-                        docker rm ${APP_NAME}  || true &&
-                        docker build -t ${APP_NAME} . &&
+                        docker rm ${APP_NAME} || true &&
+                        docker build --no-cache -t ${APP_NAME} . &&
                         docker run -d --name ${APP_NAME} -p 3000:80 ${APP_NAME}
                     '
                 """
             }
+        }
+    }
+
+    post {
+        failure {
+            echo "❌ 배포 실패"
+        }
+        success {
+            echo "✅ 배포 성공! http://${REMOTE_HOST}:3000"
         }
     }
 }
