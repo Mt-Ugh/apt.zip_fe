@@ -49,6 +49,26 @@ pipeline {
             }
         }
 
+        stage('Vue Build') {
+          steps {
+            script {
+              docker.image('node:18').inside("-u root:root -v ${WORKSPACE}/.env:/app/.env -w /app") {
+                sh '''
+                  echo "== /app 디렉토리 파일 목록 =="
+                  ls -al /app
+
+                  echo "== 컨테이너 내 .env 내용 =="
+                  cat /app/.env
+
+                  npm ci
+                  npm run build -- --mode production
+                '''
+              }
+            }
+          }
+        }
+
+
         stage('Send Files to Remote Server') {
             steps {
                 sh """
