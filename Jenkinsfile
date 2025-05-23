@@ -36,14 +36,14 @@ pipeline {
         stage('Vue Build') {
             steps {
                 script {
-                    docker.image('node:18').inside('-u root:root -v $PWD/.env:/app/.env -w /app') {
+                    docker.image('node:18').inside("-u root:root -v ${WORKSPACE}/.env:/app/.env -w /app") {
                         sh '''
                             echo "== .env 확인 =="
                             [ -f .env ] || (echo "❌ .env 없음" && exit 1)
-        
+
                             echo "== .env 내용 =="
                             cat .env
-        
+
                             npm ci
                             npm run build
                         '''
