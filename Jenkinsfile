@@ -2,12 +2,11 @@ pipeline {
     agent any
 
     environment {
-        REMOTE_USER = 'jenkins'
-        REMOTE_HOST = '192.168.35.110'
-        REMOTE_PATH = '/home/jenkins/aptzip_fe'
-        APP_NAME = 'vue-app'
-
-        MINIO_ENDPOINT = 'http://192.168.35.120:9000'
+        REMOTE_USER       = 'jenkins'
+        REMOTE_HOST       = '192.168.35.110'
+        REMOTE_PATH       = '/home/jenkins/aptzip_fe'
+        APP_NAME          = 'vue-app'
+        MINIO_ENDPOINT    = 'http://192.168.35.120:9000'
         MINIO_BUCKET_PATH = 'aptzip/configs/.env'
     }
 
@@ -22,12 +21,10 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'minio-cred', usernameVariable: 'MINIO_USER', passwordVariable: 'MINIO_PASS')]) {
                     sh '''
-                        echo "== mc 설치 및 .env 다운로드 =="
                         curl -sO https://dl.min.io/client/mc/release/linux-amd64/mc
                         chmod +x mc
                         ./mc alias set aptminio $MINIO_ENDPOINT $MINIO_USER $MINIO_PASS
                         ./mc cp aptminio/$MINIO_BUCKET_PATH .env || (echo "❌ .env 다운로드 실패" && exit 1)
-                        echo "✅ .env 다운로드 성공"
                     '''
                 }
             }
