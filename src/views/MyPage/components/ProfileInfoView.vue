@@ -1,5 +1,5 @@
 <template>
-<div class="profile-content profile-content-fixed-height">
+  <div class="profile-content profile-content-fixed-height">
     <h2 class="profile-title">회원 정보</h2>
     <div class="profile-title-underline"></div>
     <div class="profile-flex">
@@ -26,12 +26,14 @@
         </div>
       </div>
       <div class="profile-image-area">
-        <img
-          class="profile-image"
-          :class="{ 'has-profile': !!props.user?.profileUrl }"
-          :src="props.user?.profileUrl ? props.user.profileUrl : DefaultProfile"
-          alt="profile"
-        />
+        <div class="profile-image-wrapper">
+          <img
+            class="profile-image"
+            :class="{ 'has-profile': !!props.user?.profileUrl }"
+            :src="props.user?.profileUrl ? props.user.profileUrl : DefaultProfile"
+            alt="profile"
+          />
+        </div>
       </div>
     </div>
     <div class="profile-bottom">
@@ -64,7 +66,9 @@ const props = defineProps({ user: Object })
   min-height: 700px;
   display: flex;
   flex-direction: column;
-  transition: width 0.2s, padding 0.2s;
+  transition:
+    width 0.2s,
+    padding 0.2s;
 }
 .profile-content-fixed-height {
   min-height: 800px;
@@ -123,24 +127,45 @@ const props = defineProps({ user: Object })
   margin: 20px 0 0 0;
   height: 180px;
   border-radius: 24px;
+  position: relative;
 }
-.profile-image {
+.profile-image-wrapper {
+  position: relative;
   width: 163px;
   height: 160px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+.profile-image {
   object-fit: cover;
   display: block;
-  /* 기본(DefaultProfile) 스타일 */
   background: none;
   border: none;
   border-radius: 0;
   box-shadow: none;
-  transition: border 0.2s, box-shadow 0.2s, background 0.2s, border-radius 0.2s;
+  transition:
+    border 0.2s,
+    box-shadow 0.2s,
+    background 0.2s,
+    border-radius 0.2s,
+    width 0.2s,
+    height 0.2s;
 }
 .profile-image.has-profile {
+  width: 150px;
+  height: 160px;
   border: 4px solid #fff;
-  box-shadow: 0 2px 12px rgba(30,40,60,0.13);
+  box-shadow: 0 2px 12px rgba(30, 40, 60, 0.13);
   background: linear-gradient(135deg, #eaf6ff 0%, #f5f7fa 100%);
   border-radius: 24px;
+}
+.profile-image:not(.has-profile) {
+  width: 100%;
+  border: none;
+  box-shadow: none;
+  background: none;
+  border-radius: 0;
 }
 .profile-bottom {
   width: 100%;

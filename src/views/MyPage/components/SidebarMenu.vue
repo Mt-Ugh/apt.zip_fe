@@ -1,14 +1,33 @@
 <template>
   <aside class="sidebar">
-    <div class="menu selected">회원 정보</div>
-    <div class="menu">관심 지역</div>
+    <div
+      class="menu"
+      :class="{ selected: selected === 'profile' }"
+      @click="$emit('select', 'profile')"
+    >
+      회원 정보
+    </div>
+    <div class="menu" :class="{ selected: selected === 'area' }" @click="$emit('select', 'area')">
+      관심 지역
+    </div>
     <br />
     <br />
     <br />
-    <div class="menu">리뷰 관리</div>
-    <div class="menu">Q&A 관리</div>
+    <div
+      class="menu"
+      :class="{ selected: selected === 'review' }"
+      @click="$emit('select', 'review')"
+    >
+      리뷰 관리
+    </div>
+    <div class="menu" :class="{ selected: selected === 'qna' }" @click="$emit('select', 'qna')">
+      Q&A 관리
+    </div>
   </aside>
 </template>
+<script setup>
+defineProps({ selected: String })
+</script>
 <style scoped>
 .sidebar {
   width: 420px;
@@ -37,6 +56,17 @@
   background: #eaf6ff;
   color: #222;
   border-radius: 8px;
+}
+@media (max-width: 2000px) {
+  .sidebar {
+    width: 350px;
+    padding-left: 15px;
+  }
+  .menu {
+    min-width: 300px;
+    font-size: 14px;
+    margin-left: 5px;
+  }
 }
 
 @media (max-width: 1600px) {
