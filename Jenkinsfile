@@ -17,7 +17,7 @@ pipeline {
             }
         }
 
-        stage('Download .env from MinIO') {
+        stage('Fetch .env from MinIO') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'minio-cred', usernameVariable: 'MINIO_USER', passwordVariable: 'MINIO_PASS')]) {
                     sh '''
@@ -30,46 +30,27 @@ pipeline {
             }
         }
 
-        stage('Vue Build') {
+        // ← 기존 'Vue Build' 와 이름이 겹치지 않도록 변경
+        stage('Install & Build Vue') {
             steps {
                 script {
                     docker.image('node:18').inside("-u root:root -v ${WORKSPACE}/.env:/app/.env -w /app") {
                         sh '''
-                            echo "== .env 확인 =="
-                            [ -f .env ] || (echo "❌ .env 없음" && exit 1)
+                            echo "== /app 디렉토리 파일 목록 =="
+                            ls -al /app
 
-                            echo "== .env 내용 =="
-                            cat .env
+                            echo "== 컨테이너 내 .env 내용 =="
+                            cat /app/.env
 
-                            npm ci
-                            npm run build
+                            npm ci --prefer-offline --no-audit
+                            npm run build -- --mode production
                         '''
                     }
                 }
             }
         }
 
-        stage('Vue Build') {
-          steps {
-            script {
-              docker.image('node:18').inside("-u root:root -v ${WORKSPACE}/.env:/app/.env -w /app") {
-                sh '''
-                  echo "== /app 디렉토리 파일 목록 =="
-                  ls -al /app
-
-                  echo "== 컨테이너 내 .env 내용 =="
-                  cat /app/.env
-
-                  npm ci
-                  npm run build -- --mode production
-                '''
-              }
-            }
-          }
-        }
-
-
-        stage('Send Files to Remote Server') {
+        stage('Send Files to Remote') {
             steps {
                 sh """
                     ssh ${REMOTE_USER}@${REMOTE_HOST} 'mkdir -p ${REMOTE_PATH}'
@@ -86,7 +67,7 @@ pipeline {
                     ssh ${REMOTE_USER}@${REMOTE_HOST} '
                         cd ${REMOTE_PATH} &&
                         docker stop ${APP_NAME} || true &&
-                        docker rm ${APP_NAME} || true &&
+                        docker rm ${APP_NAME}  || true &&
                         docker build -t ${APP_NAME} . &&
                         docker run -d --name ${APP_NAME} -p 3000:80 ${APP_NAME}
                     '
