@@ -30,17 +30,15 @@ pipeline {
         }
 
         stage('Vue Build') {
-            agent {
-                docker {
-                    image 'node:18'
-                    args '-u root:root'
-                }
-            }
             steps {
-                sh '''
-                    npm ci
-                    npm run build
-                '''
+                script {
+                    docker.image('node:18').inside('-u root:root') {
+                        sh '''
+                            npm ci
+                            npm run build
+                        '''
+                    }
+                }
             }
         }
 
