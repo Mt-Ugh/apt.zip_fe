@@ -1,24 +1,22 @@
 <template>
   <div :id="mapId" class="map-container">
     <button class="detail-btn" @click="goDetail">상세보기</button>
+    <button class="roadview-btn" @click="closeRoadview" v-if="showRoadview">지도보기</button>
+    <div v-if="!showRoadview" :id="`${mapId}-map`" style="width: 100%; height: 100%"></div>
+    <div v-else :id="`${mapId}-roadview`" style="width: 100%; height: 100%"></div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, watch, ref } from 'vue'
+import { onMounted, watch, ref, h, render, nextTick } from 'vue'
 import { useKakaoLoader } from '@/composables/useKakaoLoader'
 import { useRouter } from 'vue-router'
 import { useMapStore } from '@/stores/mapStore'
+import RoadView from '@/views/InterestDeal/components/RoadView.vue'
 
 const props = defineProps({
-  apt: {
-    type: Object,
-    required: true,
-  },
-  mapId: {
-    type: String,
-    required: true,
-  },
+  apt: { type: Object, required: true },
+  mapId: { type: String, required: true },
 })
 
 const router = useRouter()
@@ -26,6 +24,8 @@ const mapStore = useMapStore()
 const mapRef = ref(null)
 const markers = ref([])
 const overlays = ref([])
+const customOverlays = ref([])
+const showRoadview = ref(false)
 
 function clearMarkers() {
   markers.value.forEach((marker) => marker.setMap(null))
@@ -45,13 +45,6 @@ function addAptMarker(apt) {
       title: apt.aptNm,
     })
     markers.value.push(marker)
-    const overlay = new kakao.maps.CustomOverlay({
-      position: marker.getPosition(),
-      content: `<div class="apt-label">${apt.aptNm}</div>`,
-      yAnchor: 2,
-    })
-    overlay.setMap(mapRef.value)
-    overlays.value.push(overlay)
     mapRef.value.setCenter(marker.getPosition())
   } else if (apt.address) {
     const geocoder = new kakao.maps.services.Geocoder()
@@ -64,13 +57,6 @@ function addAptMarker(apt) {
           title: apt.aptNm,
         })
         markers.value.push(marker)
-        const overlay = new kakao.maps.CustomOverlay({
-          position: marker.getPosition(),
-          content: `<div class="apt-label">${apt.aptNm}</div>`,
-          yAnchor: 1.4,
-        })
-        overlay.setMap(mapRef.value)
-        overlays.value.push(overlay)
         mapRef.value.setCenter(coords)
       }
     })
@@ -79,7 +65,7 @@ function addAptMarker(apt) {
 
 function initMap() {
   const kakao = window.kakao
-  const container = document.getElementById(props.mapId)
+  const container = document.getElementById(`${props.mapId}-map`)
   if (!container) return
 
   const centerLat = props.apt.latitude || 37.5665
@@ -87,7 +73,7 @@ function initMap() {
 
   const map = new kakao.maps.Map(container, {
     center: new kakao.maps.LatLng(centerLat, centerLng),
-    level: 5,
+    level: 4,
   })
   mapRef.value = map
 }
@@ -106,10 +92,79 @@ function goDetail() {
   }
 }
 
+// 오버레이에 로드뷰 버튼을 넣고, 클릭 시 showRoadview를 true로!
+function addCustomOverlay({ lat, lng, apt, xAnchor = 0.3, yAnchor = 0.91 }) {
+  const kakao = window.kakao
+  if (!kakao || !kakao.maps || !mapRef.value) return
+
+  const container = document.createElement('div')
+  let customOverlay = null
+
+  render(
+    h(RoadView, {
+      apt,
+      onOpenRoadview: () => {
+        if (customOverlay) customOverlay.setMap(null)
+        showRoadview.value = true
+        nextTick(() => {
+          openRoadview()
+        })
+      },
+    }),
+    container,
+  )
+
+  const position = new kakao.maps.LatLng(lat, lng)
+  customOverlay = new kakao.maps.CustomOverlay({
+    position,
+    content: container,
+    xAnchor,
+    yAnchor,
+  })
+  customOverlay.setMap(mapRef.value)
+  customOverlays.value.push(customOverlay)
+}
+
+// 실제 로드뷰를 띄우는 함수
+function openRoadview() {
+  const kakao = window.kakao
+  const container = document.getElementById(`${props.mapId}-roadview`)
+  if (!container) return
+  container.innerHTML = '' // 초기화
+  const roadview = new kakao.maps.Roadview(container)
+  const position = new kakao.maps.LatLng(props.apt.latitude, props.apt.longitude)
+  const roadviewClient = new kakao.maps.RoadviewClient()
+  roadviewClient.getNearestPanoId(position, 50, function (panoId) {
+    if (panoId) {
+      roadview.setPanoId(panoId, position)
+    } else {
+      container.innerHTML = '<div style="padding:40px;text-align:center;">로드뷰가 없습니다.</div>'
+    }
+  })
+}
+
+function closeRoadview() {
+  showRoadview.value = false
+  nextTick(() => {
+    initMap()
+    addAptMarker(props.apt)
+    addCustomOverlay({
+      lat: props.apt.latitude,
+      lng: props.apt.longitude,
+      apt: props.apt,
+    })
+  })
+}
+
 onMounted(() => {
   useKakaoLoader(() => {
     initMap()
     addAptMarker(props.apt)
+    addCustomOverlay({
+      lat: props.apt.latitude,
+      lng: props.apt.longitude,
+      apt: props.apt,
+    })
   })
 })
 
@@ -129,7 +184,7 @@ watch(
 .map-container {
   width: 100%;
   min-height: 400px;
-  height: 400px;
+  height: 550px;
   background: #e6eaf3;
   border-radius: 0 0 14px 14px;
   z-index: 1;
@@ -158,6 +213,34 @@ watch(
 </style>
 
 <style>
+.detail-btn,
+.roadview-btn {
+  position: absolute;
+  right: 18px;
+  background: #2564eba9;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 9px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(30, 40, 60, 0.1);
+  cursor: pointer;
+  transition: background 0.18s;
+  z-index: 20;
+}
+.detail-btn:hover,
+.roadview-btn:hover {
+  background: #1745b0ea;
+}
+
+/* 상세보기는 아래, 지도보기는 위에 */
+.detail-btn {
+  bottom: 18px;
+}
+.roadview-btn {
+  bottom: 60px;
+}
 .apt-label {
   background: rgba(255, 255, 255, 0.85);
   border: 1.2px solid #4c94eb;
@@ -181,5 +264,45 @@ watch(
   position: relative;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* Modern apt balloon style */
+.apt-balloon-modern {
+  min-width: 110px;
+  max-width: 210px;
+  background: #fff;
+  color: #1745b0;
+  border-radius: 14px;
+  padding: 10px 16px 8px 16px;
+  font-size: 14px;
+  box-shadow: 0 4px 16px rgba(30, 40, 60, 0.13);
+  position: relative;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.apt-balloon-modern::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -12px;
+  transform: translateX(-50%);
+  border-width: 10px 10px 0 10px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+  filter: drop-shadow(0 2px 2px rgba(37, 99, 235, 0.12));
+  display: block;
+  width: 0;
+}
+.apt-title-modern {
+  font-size: 15px;
+  font-weight: bold;
+  color: #2563eb;
+  margin-bottom: 3px;
+}
+.apt-addr-modern {
+  font-size: 12px;
+  color: #555;
+  word-break: keep-all;
 }
 </style>
