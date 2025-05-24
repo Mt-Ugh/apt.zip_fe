@@ -247,7 +247,6 @@ async function submit() {
     background 0.2s,
     border-radius 0.2s;
 }
-/* 프로필 이미지가 있을 때만 강조 스타일 및 크기 */
 .profile-image.has-profile {
   width: 150px;
   height: 160px;
@@ -256,7 +255,6 @@ async function submit() {
   background: linear-gradient(135deg, #eaf6ff 0%, #f5f7fa 100%);
   border-radius: 24px;
 }
-/* 기본(DefaultProfile)일 때는 크기 없음 */
 .profile-image:not(.has-profile) {
   width: 100%;
   border: none;
@@ -268,7 +266,6 @@ async function submit() {
   position: absolute;
   right: 0;
   bottom: 0;
-  /* 스타일 최소화: 배경, 테두리, 색상 등 제거 */
   background: none;
   border: none;
   border-radius: 0;

@@ -15,22 +15,10 @@ export const UpdateProfile = async (payload) => {
 }
 
 export const UpdateImage = async (file) => {
-  const formData = new FormData();
-  formData.append('image', file);
-  try {
-    const token = localStorage.getItem('accessToken');
-    const res = await fetch('/user/update/profileUrl', {
-      method: 'PUT',
-      body: formData,
-      credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${token}`, 
-      },
-    });
-    return res.data;
-  } catch {
-    throw new Error('등록 실패');
-  }
+  const formData = new FormData()
+  formData.append('profileImage', file)
+  const res = await axios.put('/user/update/profileUrl', formData)
+  return res.data
 }
 
 export const DeleteUser = async () => {
@@ -39,5 +27,29 @@ export const DeleteUser = async () => {
     return true
   } else {
     throw new Error('삭제 실패')
+  }
+}
+
+export const UserAreaList = async () => {
+  const res = await axios.get('/interestArea/list')
+  return res.data
+}
+
+export const UserReviewList = async () => {
+  const res = await axios.get('/review/list/user')
+  return res.data
+}
+
+export const UserQnAList = async () => {
+  const res = await axios.get('/qna/userList')
+  return res.data
+}
+
+export const DeleteReview = async (reviewUuid) => {
+  const res = await axios.delete(`/review/delete/${reviewUuid}`)
+  if (res.status === 200) {
+    return true
+  } else {
+    throw new Error('등록 실패')
   }
 }
