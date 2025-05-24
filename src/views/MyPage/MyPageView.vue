@@ -2,7 +2,6 @@
   <div class="mypage-container">
     <SidebarMenu :selected="selectedMenu" @select="selectedMenu = $event" />
     <main class="profile-main">
-      <!-- 회원 정보 -->
       <ProfileInfoView
         v-if="selectedMenu === 'profile' && !editMode"
         :user="user"
@@ -15,7 +14,6 @@
         @cancel="editMode = false"
         @update="onProfileUpdated"
       />
-      <!-- 관심 지역, 리뷰 관리, Q&A 관리 컴포넌트는 아래처럼 추가 -->
       <InterestArea v-if="selectedMenu === 'area'" />
       <ReviewManage v-if="selectedMenu === 'review'" />
       <QnaManage v-if="selectedMenu === 'qna'" />
@@ -43,7 +41,7 @@ import InterestArea from '@/views/MyPage/components/InterestArea.vue'
 import ReviewManage from '@/views/MyPage/components/ReviewManage.vue'
 import QnaManage from '@/views/MyPage/components/QnaManage.vue'
 
-const selectedMenu = ref('profile') // 기본값: 회원 정보
+const selectedMenu = ref('profile') 
 const router = useRouter()
 const editMode = ref(false)
 const user = ref(null)
@@ -105,7 +103,7 @@ const onCancel = () => {
 <style scoped>
 .mypage-container {
   display: flex;
-  min-height: 100vh; /* 변경: height -> min-height */
+  min-height: 100vh; 
   background: #f8fafc;
   margin: 27px auto 0;
 }

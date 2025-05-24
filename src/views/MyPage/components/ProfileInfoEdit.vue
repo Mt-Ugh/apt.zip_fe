@@ -71,8 +71,7 @@
 import { ref, reactive, watch, computed } from 'vue'
 import DefaultProfile from '@/assets/images/Common/DefaultProfile.svg'
 import EditButton from '@/assets/images/MyPage/EditButton.svg'
-import { UpdateProfile } from '@/api/MyPage'
-//UpdateImage 추가 해야함
+import { UpdateProfile ,UpdateImage} from '@/api/MyPage'
 import CommonModal from '@/components/common/CommonModal.vue'
 
 const { user } = defineProps({ user: Object })
@@ -127,11 +126,10 @@ async function submit() {
       email: form.email,
       password: form.password,
     })
-    // 이미지 파일이 선택된 경우에만 UpdateImage 호출
-    // if (selectedImageFile.value) {
-    //   console.log('업데이트할 이미지 파일:', selectedImageFile.value)
-    //   await UpdateImage(selectedImageFile.value)
-    // }
+
+    if (selectedImageFile.value) {
+      await UpdateImage(selectedImageFile.value)
+    }
     emit('update', { ...form })
   } catch (e) {
     if (e?.response?.status === 409) {
@@ -142,7 +140,7 @@ async function submit() {
 </script>
 <style scoped>
 .profile-content {
-  width: 700px;
+  width: 1100px;
   background: #fff;
   border-radius: 12px;
   padding: 40px 36px 0 36px;
@@ -399,13 +397,13 @@ async function submit() {
 }
 @media (max-width: 1600px) {
   .profile-content {
-    width: 420px;
+    width: 980px;
     padding: 22px 10px 0 10px;
-    min-height: 500px;
+    min-height: 600px;
   }
   .profile-content-fixed-height {
-    min-height: 520px;
-    height: 520px;
+    min-height: 600px;
+    height: 600px;
   }
   .profile-title {
     font-size: 20px;

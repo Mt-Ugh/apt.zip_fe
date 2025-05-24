@@ -14,17 +14,22 @@ export const UpdateProfile = async (payload) => {
   }
 }
 
-export const UpdateImage = async (profileUrl) => {
-  const formData = new FormData()
-  formData.append('image', profileUrl)
-  const res = await axios.post('/user/update/profileUrl', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
-
-  if (res.status === 200) {
-    return res.data
-  } else {
-    throw new Error('등록 실패')
+export const UpdateImage = async (file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  try {
+    const token = localStorage.getItem('accessToken');
+    const res = await fetch('/user/update/profileUrl', {
+      method: 'PUT',
+      body: formData,
+      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${token}`, 
+      },
+    });
+    return res.data;
+  } catch {
+    throw new Error('등록 실패');
   }
 }
 
