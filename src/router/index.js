@@ -6,6 +6,7 @@ import QnAView from '@/views/QnA/QnAView.vue'
 import QnADetail from '@/views/QnA/QnADetail.vue'
 import QnARegist from '@/views/QnA/QnARegist.vue'
 import NewsView from '@/views/News/NewsView.vue'
+import AboutUs from '@/views/AboutUs/AboutUsView.vue'
 
 const routes = [
   {
@@ -38,10 +39,15 @@ const routes = [
     name: 'QnARegist',
     component: QnARegist,
   },
-    path: '/news',
+  {path: '/news',
     name: 'NewsView',
     component: NewsView,
   },
+  {
+    path: '/about',
+    name: 'AboutUs',
+    component: AboutUs,
+  }
 ]
 
 const router = createRouter({
