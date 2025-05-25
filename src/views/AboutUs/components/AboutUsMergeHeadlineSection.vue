@@ -4,6 +4,7 @@
     <h2 class="aboutus-merge-headline right" ref="rightHeadline">AI🤖</h2>
   </section>
 </template>
+
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
@@ -40,6 +41,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleMergeHeadlineScroll);
 });
 </script>
+
 <style scoped>
 .aboutus-merge-headline-section {
   position: relative;

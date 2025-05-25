@@ -48,6 +48,7 @@
     </div>
   </section>
 </template>
+
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import AboutUsImg1 from '@/assets/images/AboutUs/AboutUsImg1.jpg';
@@ -103,6 +104,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleParallax);
 });
 </script>
+
 <style scoped>
 .aboutus-transparent-section2-centered {
   width: 100%;

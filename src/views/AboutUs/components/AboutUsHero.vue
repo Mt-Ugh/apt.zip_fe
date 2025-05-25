@@ -10,9 +10,11 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import AboutUsHeadLine from '@/assets/images/AboutUs/AboutUsHeadLine.avif'; 
 </script>
+
 <style scoped>
 .aboutus-hero {
   position: relative;

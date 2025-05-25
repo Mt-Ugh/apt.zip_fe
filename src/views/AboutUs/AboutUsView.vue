@@ -22,7 +22,6 @@ import AboutUsMergeHeadlineSection from '@/views/AboutUs/components/AboutUsMerge
 import AboutUsTransparentSection from '@/views/AboutUs/components/AboutUsTransparentSection.vue';
 import AboutUsPartnerSection from '@/views/AboutUs/components/AboutUsPartnerSection.vue';
 
-// Parallax 효과 처리 함수
 function handleParallax() {
   const imgs = [
     ...document.querySelectorAll('.aboutus-transparent-img2-centered img')
@@ -46,7 +45,6 @@ function handleParallax() {
   });
 }
 
-// 헤드라인 스크롤 애니메이션 처리 함수
 const leftHeadline = ref(null);
 const rightHeadline = ref(null);
 const aboutUsImg2 = ref(null);
@@ -70,7 +68,6 @@ function handleMergeHeadlineScroll() {
   }
 }
 
-// 이벤트 리스너 등록 및 해제
 onMounted(() => {
   window.addEventListener('scroll', handleParallax, { passive: true });
   window.addEventListener('resize', handleParallax);

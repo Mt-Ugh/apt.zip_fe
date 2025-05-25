@@ -72,9 +72,11 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import AboutUsImg3 from '@/assets/images/AboutUs/AboutUsImg3.avif';
 </script>
+
 <style scoped>
 .aboutus-partner-section {
   background: #d3cfc3;

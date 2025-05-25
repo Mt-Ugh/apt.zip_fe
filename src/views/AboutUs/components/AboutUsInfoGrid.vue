@@ -30,6 +30,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import SsafyLogo from '@/assets/images/AboutUs/SsafyLogo.png';
 </script>
