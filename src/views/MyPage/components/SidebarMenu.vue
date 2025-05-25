@@ -25,9 +25,11 @@
     </div>
   </aside>
 </template>
+
 <script setup>
 defineProps({ selected: String })
 </script>
+
 <style scoped>
 .sidebar {
   width: 420px;

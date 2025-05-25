@@ -67,6 +67,7 @@
     @close="showModal = false"
   />
 </template>
+
 <script setup>
 import { ref, reactive, watch, computed } from 'vue'
 import DefaultProfile from '@/assets/images/Common/DefaultProfile.svg'
@@ -138,6 +139,7 @@ async function submit() {
   }
 }
 </script>
+
 <style scoped>
 .profile-content {
   width: 1100px;

@@ -30,17 +30,17 @@ export const DeleteUser = async () => {
   }
 }
 
-export const UserAreaList = async () => {
+export const AreaList = async () => {
   const res = await axios.get('/interestArea/list')
   return res.data
 }
 
-export const UserReviewList = async () => {
+export const ReviewList = async () => {
   const res = await axios.get('/review/list/user')
   return res.data
 }
 
-export const UserQnAList = async () => {
+export const QnAList = async () => {
   const res = await axios.get('/qna/userList')
   return res.data
 }

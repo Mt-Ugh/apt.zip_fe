@@ -51,10 +51,12 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import DefaultProfile from '@/assets/images/Common/DefaultProfile.svg'
 const props = defineProps({ user: Object })
 </script>
+
 <style scoped>
 .profile-content {
   width: 700px;

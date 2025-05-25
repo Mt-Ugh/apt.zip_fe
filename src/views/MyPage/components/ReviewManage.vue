@@ -63,9 +63,10 @@
     />
   </form>
 </template>
+
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { UserReviewList, DeleteReview } from '@/api/MyPage'
+import { ReviewList, DeleteReview } from '@/api/MyPage'
 import ConfirmModal from '@/components/common/ConfirmModal.vue'
 
 const reviews = ref([])
@@ -132,7 +133,7 @@ function onCancelDelete() {
 }
 
 async function fetchReviews() {
-  const result = await UserReviewList()
+  const result = await ReviewList()
   reviews.value = result
 }
 
@@ -140,6 +141,7 @@ onMounted(async () => {
   fetchReviews()
 })
 </script>
+
 <style scoped>
 .profile-content {
   width: 1100px;

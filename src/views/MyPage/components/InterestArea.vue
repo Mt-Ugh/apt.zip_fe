@@ -52,10 +52,11 @@
     />
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import { deleteInterestArea } from '@/api/InterestArea'
-import { UserAreaList } from '@/api/MyPage'
+import { AreaList } from '@/api/MyPage'
 import ConfirmModal from '@/components/common/ConfirmModal.vue'
 
 const mainLocation = ref(null)
@@ -65,7 +66,7 @@ const showConfirmModal = ref(false)
 const pendingUnstar = ref({ location: null, idx: null })
 
 async function fetchInterestAreas() {
-  const res = await UserAreaList()
+  const res = await AreaList()
   if (res && res.length > 0) {
     mainLocation.value = { ...res[0] }
     otherLocations.value = res.slice(1)
@@ -111,6 +112,7 @@ function swapLocation(idx) {
 
 onMounted(fetchInterestAreas)
 </script>
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 .interest-area-root {
