@@ -17,7 +17,7 @@ export const UpdateProfile = async (payload) => {
 export const UpdateImage = async (file) => {
   const formData = new FormData()
   formData.append('profileImage', file)
-  const res = await axios.put('/user/update/profileUrl', formData)
+  const res = await axios.put('/user/update/profile/image', formData)
   return res.data
 }
 
