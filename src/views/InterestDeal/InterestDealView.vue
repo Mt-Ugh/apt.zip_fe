@@ -99,7 +99,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { IterestDealList, deleteInterestDeals } from '@/api/InterestDeal'
+import { fetchInterestDealList, deleteInterestDeals } from '@/api/InterestDeal'
 import KakaoMap from '@/views/InterestDeal/components/KakaoMap.vue'
 
 const deals = ref([])
@@ -139,7 +139,7 @@ const deleteSelectedDeals = async () => {
 }
 
 const fetchDeals = async () => {
-  const res = await IterestDealList()
+  const res = await fetchInterestDealList()
   deals.value = res
 }
 

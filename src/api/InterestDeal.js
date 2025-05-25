@@ -1,14 +1,13 @@
 import axios from './http'
 
-export const IterestDealList = async () => {
+export const fetchInterestDealList = async () => {
     const res = await axios.get('/interestSale/list')
     return res.data
 }
 
-export const deleteInterestDeals = async (saleUuids) => {
-    console.log('saleUuids', saleUuids)
+export const deleteInterestDeals = async (saleUuid) => {
     const res = await axios.delete('/interestSale/delete', {
-        data: { sale_uuid: saleUuids }
+        data: { sale_uuid: saleUuid }
     })
     if (res.status === 200) {
         return true
