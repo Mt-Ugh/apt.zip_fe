@@ -17,20 +17,28 @@
 import { PLACE_CATEGORIES } from '@/constants/placeCategory'
 import { useMapStore } from '@/stores/mapStore'
 import { fetchCommercialPlaceList } from '@/api/CommercialPlace'
-import { defineEmits, ref, watch } from 'vue'
+import { defineEmits, defineExpose, ref, watch } from 'vue'
 
 const mapStore = useMapStore()
 const emit = defineEmits(['show-places'])
 const selectedCategory = ref(null)
 
 async function handleCategorySelect(type) {
-  if (selectedCategory.value === type) return // 이미 선택된 카테고리면 무시
+  if (selectedCategory.value === type) return
   selectedCategory.value = type
   const dongCode = mapStore.dongCode
   if (!dongCode) return
   const result = await fetchCommercialPlaceList(dongCode, type)
   emit('show-places', result)
 }
+
+function clearCategorySelection() {
+  selectedCategory.value = null
+}
+
+defineExpose({
+  clearCategorySelection,
+})
 
 watch(
   () => mapStore.dongCode,

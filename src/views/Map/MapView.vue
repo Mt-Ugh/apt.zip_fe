@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { useMapStore } from '@/stores/mapStore' // Pinia store import
+import { useMapStore } from '@/stores/mapStore'
 
 import SearchBar from './components/SearchBar.vue'
 import AptList from './components/AptList.vue'
@@ -39,13 +39,10 @@ function handleSearchResult({ list, code }) {
   mapStore.setDealList(list)
   mapStore.setSelectedApt(null)
   mapStore.setDongCode(code)
-  console.log('검색 결과:', list)
-  console.log('선택된 동 코드:', code)
 }
 
 function handleSelectApt(select) {
   mapStore.setSelectedApt(select.aptSeq)
-  console.log('선택된 아파트:', select.aptSeq)
 }
 </script>
 
