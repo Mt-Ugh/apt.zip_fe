@@ -56,7 +56,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { deleteInterestArea } from '@/api/InterestArea'
-import { AreaList } from '@/api/MyPage'
+import { fetchAreaList } from '@/api/MyPage'
 import ConfirmModal from '@/components/common/ConfirmModal.vue'
 
 const mainLocation = ref(null)
@@ -66,7 +66,7 @@ const showConfirmModal = ref(false)
 const pendingUnstar = ref({ location: null, idx: null })
 
 async function fetchInterestAreas() {
-  const res = await AreaList()
+  const res = await fetchAreaList()
   if (res && res.length > 0) {
     mainLocation.value = { ...res[0] }
     otherLocations.value = res.slice(1)

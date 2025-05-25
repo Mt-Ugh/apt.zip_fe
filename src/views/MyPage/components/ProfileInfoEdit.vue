@@ -72,7 +72,7 @@
 import { ref, reactive, watch, computed } from 'vue'
 import DefaultProfile from '@/assets/images/Common/DefaultProfile.svg'
 import EditButton from '@/assets/images/MyPage/EditButton.svg'
-import { UpdateProfile ,UpdateImage} from '@/api/MyPage'
+import { updateProfile ,updateImage} from '@/api/MyPage'
 import CommonModal from '@/components/common/CommonModal.vue'
 
 const { user } = defineProps({ user: Object })
@@ -122,14 +122,14 @@ async function submit() {
       showModalError('입력 오류', '비밀번호 체크를 다시 확인해주세요.')
       return
     }
-    await UpdateProfile({
+    await updateProfile({
       nickname: form.nickname,
       email: form.email,
       password: form.password,
     })
 
     if (selectedImageFile.value) {
-      await UpdateImage(selectedImageFile.value)
+      await updateImage(selectedImageFile.value)
     }
     emit('update', { ...form })
   } catch (e) {

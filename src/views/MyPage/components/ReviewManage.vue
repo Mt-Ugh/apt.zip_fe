@@ -66,7 +66,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { ReviewList, DeleteReview } from '@/api/MyPage'
+import { fetchReviewList, deleteReview } from '@/api/MyPage'
 import ConfirmModal from '@/components/common/ConfirmModal.vue'
 
 const reviews = ref([])
@@ -111,7 +111,7 @@ function confirmDelete(review, idx) {
 async function onConfirmDelete() {
   if (!confirmReview.value) return
   try {
-    await DeleteReview(confirmReview.value.reviewUuid)
+    await deleteReview(confirmReview.value.reviewUuid)
     const globalIndex = (currentPage.value - 1) * itemsPerPage + confirmIndex.value
     reviews.value.splice(globalIndex, 1)
     if (currentPage.value > totalPages.value) {
@@ -133,7 +133,7 @@ function onCancelDelete() {
 }
 
 async function fetchReviews() {
-  const result = await ReviewList()
+  const result = await fetchReviewList()
   reviews.value = result
 }
 

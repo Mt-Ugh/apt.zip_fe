@@ -1,11 +1,11 @@
 import axios from './http'
 
-export const UserDetail = async () => {
+export const fetchUserDetail = async () => {
   const res = await axios.get('/user/detail')
   return res.data
 }
 
-export const UpdateProfile = async (payload) => {
+export const updateProfile = async (payload) => {
   const res = await axios.put('/user/update/profile', payload)
   if (res.status === 200) {
     return res.data
@@ -14,14 +14,14 @@ export const UpdateProfile = async (payload) => {
   }
 }
 
-export const UpdateImage = async (file) => {
+export const updateImage = async (file) => {
   const formData = new FormData()
   formData.append('profileImage', file)
   const res = await axios.put('/user/update/profile/image', formData)
   return res.data
 }
 
-export const DeleteUser = async () => {
+export const deleteUser = async () => {
   const res = await axios.delete(`/user/delete`)
   if (res.status === 200) {
     return true
@@ -30,22 +30,22 @@ export const DeleteUser = async () => {
   }
 }
 
-export const AreaList = async () => {
+export const fetchAreaList = async () => {
   const res = await axios.get('/interestArea/list')
   return res.data
 }
 
-export const ReviewList = async () => {
+export const fetchReviewList = async () => {
   const res = await axios.get('/review/list/user')
   return res.data
 }
 
-export const QnAList = async () => {
+export const fetchQnAList = async () => {
   const res = await axios.get('/qna/userList')
   return res.data
 }
 
-export const DeleteReview = async (reviewUuid) => {
+export const deleteReview = async (reviewUuid) => {
   const res = await axios.delete(`/review/delete/${reviewUuid}`)
   if (res.status === 200) {
     return true

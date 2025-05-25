@@ -34,8 +34,7 @@ import { useRouter } from 'vue-router'
 import ProfileInfoView from '@/views/MyPage/components/ProfileInfoView.vue'
 import ProfileInfoEdit from '@/views/MyPage/components/ProfileInfoEdit.vue'
 import SidebarMenu from '@/views/MyPage/components/SidebarMenu.vue'
-import { UserDetail } from '@/api/MyPage'
-import { DeleteUser } from '@/api/MyPage'
+import { fetchUserDetail, deleteUser } from '@/api/MyPage'
 import ConfirmModal from '@/components/common/ConfirmModal.vue'
 import InterestArea from '@/views/MyPage/components/InterestArea.vue'
 import ReviewManage from '@/views/MyPage/components/ReviewManage.vue'
@@ -64,7 +63,7 @@ function onWithdraw() {
   confirmMessage.value = '정말 삭제하시겠습니까?'
   confirmCallback.value = async () => {
     try {
-      await DeleteUser()
+      await deleteUser()
       showConfirmModal.value = false
       router.push('/')
     } catch {
@@ -75,7 +74,7 @@ function onWithdraw() {
 }
 
 const fetchUser = async () => {
-  const res = await UserDetail()
+  const res = await fetchUserDetail()
   user.value = res
 }
 

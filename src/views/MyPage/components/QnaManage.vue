@@ -66,7 +66,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { QnAList } from '@/api/MyPage'
+import { fetchQnAList } from '@/api/MyPage'
 import { deleteQnA } from '@/api/QnA'
 import ConfirmModal from '@/components/common/ConfirmModal.vue'
 import { QnACategory } from '@/constants/category.js'
@@ -108,7 +108,7 @@ function getCategoryLabel(categoryValue) {
 }
 
 async function fetchQna() {
-  const result = await QnAList()
+  const result = await fetchQnAList()
   qnas.value = result
 }
 
