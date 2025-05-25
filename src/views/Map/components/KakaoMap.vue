@@ -11,6 +11,7 @@
 import { onMounted, watch, ref } from 'vue'
 import { useKakaoLoader } from '@/composables/useKakaoLoader'
 import { useMapStore } from '@/stores/mapStore'
+import { PLACE_CATEGORIES } from '@/constants/placeCategory'
 import CommercialPlace from './CommercialPlace.vue'
 
 const mapStore = useMapStore()
@@ -25,6 +26,17 @@ const commercialPlaceList = ref([])
 const commercialOverlaysToShow = ref([])
 const zoomListener = ref(null)
 const currentInfoWindow = ref(null)
+
+function getCategoryIcon(majorCategory) {
+  const categoryItem = PLACE_CATEGORIES.find((category) => category.type === majorCategory)
+
+  if (categoryItem) {
+    return categoryItem.pinIcon
+  }
+
+  const etcCategory = PLACE_CATEGORIES.find((category) => category.label === '기타')
+  return etcCategory.pinIcon
+}
 
 function closeInfoWindow() {
   if (currentInfoWindow.value) {
@@ -61,6 +73,78 @@ function initMap() {
   kakao.maps.event.addListener(map, 'click', function () {
     closeInfoWindow()
   })
+
+  addCustomMapTypeControl(map, kakao)
+}
+
+function addCustomMapTypeControl(map, kakao) {
+  // 확대/축소 컨트롤 생성 (위쪽)
+  const zoomControl = document.createElement('div')
+  zoomControl.className = 'zoom_control'
+
+  const zoomInControl = document.createElement('button')
+  zoomInControl.className = 'zoom_btn_small'
+  zoomInControl.id = 'btnZoomIn'
+  zoomInControl.innerHTML = '+'
+
+  const zoomOutControl = document.createElement('button')
+  zoomOutControl.className = 'zoom_btn_small'
+  zoomOutControl.id = 'btnZoomOut'
+  zoomOutControl.innerHTML = '−'
+
+  zoomControl.appendChild(zoomInControl)
+  zoomControl.appendChild(zoomOutControl)
+
+  // 지도 타입 컨트롤 생성 (아래쪽)
+  const mapTypeControl = document.createElement('div')
+  mapTypeControl.className = 'custom_typecontrol radius_border'
+
+  const roadmapControl = document.createElement('span')
+  roadmapControl.className = 'btn_comm'
+  roadmapControl.id = 'btnRoadmap'
+  roadmapControl.textContent = '지도'
+
+  const skyviewControl = document.createElement('span')
+  skyviewControl.className = 'btn_comm'
+  skyviewControl.id = 'btnSkyview'
+  skyviewControl.textContent = '스카이뷰'
+
+  mapTypeControl.appendChild(roadmapControl)
+  mapTypeControl.appendChild(skyviewControl)
+
+  roadmapControl.classList.add('selected')
+
+  // 지도 타입 변경 이벤트
+  roadmapControl.addEventListener('click', () => {
+    map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP)
+    roadmapControl.classList.add('selected')
+    skyviewControl.classList.remove('selected')
+  })
+
+  skyviewControl.addEventListener('click', () => {
+    map.setMapTypeId(kakao.maps.MapTypeId.HYBRID)
+    skyviewControl.classList.add('selected')
+    roadmapControl.classList.remove('selected')
+  })
+
+  // 확대/축소 이벤트
+  zoomInControl.addEventListener('click', () => {
+    const currentLevel = map.getLevel()
+    if (currentLevel > 1) {
+      map.setLevel(currentLevel - 1)
+    }
+  })
+
+  zoomOutControl.addEventListener('click', () => {
+    const currentLevel = map.getLevel()
+    if (currentLevel < 14) {
+      map.setLevel(currentLevel + 1)
+    }
+  })
+
+  // 지도 타입 컨트롤과 줌 컨트롤을 모두 오른쪽 하단에 세로로 배치 (지도 타입이 위쪽)
+  map.addControl(mapTypeControl, kakao.maps.ControlPosition.BOTTOMRIGHT)
+  map.addControl(zoomControl, kakao.maps.ControlPosition.BOTTOMRIGHT)
 }
 
 function clearCommercialOverlays() {
@@ -260,9 +344,15 @@ function createCommercialMarkers() {
     const lng = Number(place.longitude)
 
     if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+      const iconUrl = getCategoryIcon(place.majorCategory)
+      const markerImage = new kakao.maps.MarkerImage(iconUrl, new kakao.maps.Size(32, 32), {
+        offset: new kakao.maps.Point(16, 32),
+      })
+
       const marker = new kakao.maps.Marker({
         position: new kakao.maps.LatLng(lat, lng),
         title: place.placeName,
+        image: markerImage,
       })
 
       kakao.maps.event.addListener(marker, 'click', function () {
@@ -605,5 +695,108 @@ onMounted(() => {
   border-right: 8px solid transparent;
   border-top: 8px solid white;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.custom_typecontrol {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-family: 'Malgun Gothic', dotum, '돋움', sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.radius_border {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.btn_comm {
+  display: block;
+  padding: 8px 12px;
+  cursor: pointer;
+  background: white;
+  color: #333;
+  text-decoration: none;
+  border: none;
+  border-bottom: 1px solid #e1e1e1;
+  transition: all 0.2s ease;
+  user-select: none;
+  text-align: center;
+  white-space: nowrap;
+  writing-mode: horizontal-tb;
+}
+
+.btn_comm:last-child {
+  border-bottom: none;
+}
+
+.btn_comm:hover {
+  background: #f8f8f8;
+}
+
+.btn_comm.selected {
+  background: #4b5040;
+  color: white;
+  font-weight: 500;
+}
+
+.btn_comm.selected:hover {
+  background: #4b5040;
+}
+
+/* 확대/축소 컨트롤 스타일 */
+.zoom_control {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  position: relative;
+  /* 오른쪽 하단에 세로로 배치 - 지도 타입 컨트롤 아래쪽에 위치 */
+}
+
+.zoom_btn_small {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: white;
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.zoom_btn_small:last-child {
+  border-bottom: none;
+}
+
+.zoom_btn_small:hover {
+  background: #f5f5f5;
+  color: #000;
+}
+
+.zoom_btn_small:active {
+  background: #e8e8e8;
+}
+
+/* 기존 확대/축소 버튼 스타일 제거 */
+.zoom_btn {
+  font-size: 16px !important;
+  font-weight: bold !important;
+  line-height: 1 !important;
+  padding: 6px 12px !important;
+}
+
+.zoom_btn:hover {
+  background: #f0f0f0 !important;
 }
 </style>
