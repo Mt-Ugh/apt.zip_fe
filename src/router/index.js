@@ -38,6 +38,7 @@ const routes = [
     name: 'QnARegist',
     component: QnARegist,
   },
+  {
     path: '/news',
     name: 'NewsView',
     component: NewsView,
