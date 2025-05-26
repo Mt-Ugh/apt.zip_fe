@@ -70,6 +70,7 @@
             <th>층</th>
             <th>면적</th>
             <th>거래금액</th>
+            <th>관심거래</th>
           </tr>
         </thead>
         <tbody>
@@ -79,11 +80,21 @@
             <td>{{ item.floor }}</td>
             <td>{{ item.excluUseAr }}㎡</td>
             <td>{{ formatPrice(item.dealAmount) }}</td>
+            <td>
+              <button class="interest-btn" @click="addInterestDeal(item)">등록</button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+
+  <CommonModal
+    :visible="showModal"
+    :title="modalTitle"
+    :message="modalMessage"
+    @close="showModal = false"
+  />
 </template>
 
 <script setup>
@@ -93,10 +104,24 @@ import Pin from '@/assets/images/Map/Pin.svg'
 import Tool from '@/assets/images/Map/Tool.svg'
 import Total from '@/assets/images/Map/Total.svg'
 import Won from '@/assets/images/Map/Won.svg'
+import CommonModal from '@/components/common/CommonModal.vue'
 import { useMapStore } from '@/stores/mapStore'
+import { useUserStore } from '@/stores/user'
+import { registInterestDeal } from '@/api/DealMap'
 
 const mapStore = useMapStore()
+const userStore = useUserStore()
 const aptDetail = ref({})
+
+const showModal = ref(false)
+const modalTitle = ref('')
+const modalMessage = ref('')
+
+const showModalError = (title, message) => {
+  modalTitle.value = title
+  modalMessage.value = message
+  showModal.value = true
+}
 
 watch(
   () => mapStore.selectedApt,
@@ -137,6 +162,36 @@ function formatDate(year, month, day) {
   const dd = String(day).padStart(2, '0')
   return `${String(year).slice(2)}.${mm}.${dd}`
 }
+
+async function addInterestDeal(item) {
+  const selectedApt = mapStore.selectedApt
+  const interestDeal = {
+    no: item.no,
+    dongCode: mapStore.dongCode,
+    aptNm: selectedApt.aptNm,
+    sidoName: selectedApt.sidoName,
+    gugunName: selectedApt.gugunName,
+    dongName: selectedApt.dongName,
+    jibun: selectedApt.jibun,
+    latitude: selectedApt.latitude,
+    longitude: selectedApt.longitude,
+  }
+
+  if (userStore.isLoggedIn) {
+    try {
+      const result = await registInterestDeal(interestDeal)
+      if (result.status === 409) {
+        showModalError('등록 실패', '이미 등록된 거래입니다')
+      } else {
+        showModalError('등록 성공', '관심 거래가 등록되었습니다')
+      }
+    } catch {
+      showModalError('등록 실패', '관심거래 등록 중 오류가 발생했습니다')
+    }
+  } else {
+    showModalError('등록 실패', '로그인을 해주세요')
+  }
+}
 </script>
 
 <style scoped>
@@ -153,7 +208,7 @@ function formatDate(year, month, day) {
   padding: 24px;
   font-family: 'Pretendard', sans-serif;
   overflow-y: auto;
-  z-index: 10003;
+  z-index: 1;
 }
 
 .close-button {
@@ -303,5 +358,22 @@ function formatDate(year, month, day) {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.interest-btn {
+  width: 32px;
+  min-width: 28px;
+  background: #bbb8e2;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: smaller;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  margin: 0 auto;
 }
 </style>
