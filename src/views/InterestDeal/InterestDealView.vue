@@ -94,6 +94,12 @@
         </div>
       </div>
     </div>
+    <CommonModal
+      :visible="showModal"
+      :title="modalTitle"
+      :message="modalMessage"
+      @close="showModal = false"
+    />
   </div>
 </template>
 
@@ -101,20 +107,30 @@
 import { ref, onMounted } from 'vue'
 import { fetchInterestDealList, deleteInterestDeals } from '@/api/InterestDeal'
 import KakaoMap from '@/views/InterestDeal/components/KakaoMap.vue'
+import CommonModal from '@/components/common/CommonModal.vue'
 
 const deals = ref([])
 const openDeals = ref({})
 const selectedDeals = ref([])
+const showModal = ref(false)
+const modalTitle = ref('')
+const modalMessage = ref('')
+
+const showModalError = (title, message) => {
+  modalTitle.value = title
+  modalMessage.value = message
+  showModal.value = true
+}
 
 function formatAmount(amount) {
   if (typeof amount !== 'number') return ''
   if (amount >= 10000) {
-    const eok = Math.floor(amount / 10000)
-    const man = amount % 10000
-    if (man === 0) {
-      return `${eok}억`
+    const hundredMillions = Math.floor(amount / 10000)
+    const tenThousands = amount % 10000
+    if (tenThousands === 0) {
+      return `${hundredMillions}억`
     }
-    return `${eok}억 ${man.toLocaleString('ko-KR')} 만원`
+    return `${hundredMillions}억 ${tenThousands.toLocaleString('ko-KR')} 만원`
   }
   return amount.toLocaleString('ko-KR') + ' 만원'
 }
@@ -133,8 +149,8 @@ const deleteSelectedDeals = async () => {
     deals.value = deals.value.filter((deal, idx) => !selectedDeals.value.includes(idx))
     selectedDeals.value = []
     openDeals.value = {}
-  } catch (e) {
-    alert('삭제 실패: ' + (e.message || ''))
+  } catch {
+    showModalError('삭제 실패', '선택한 거래를 삭제하는 데 실패했습니다. 다시 시도해주세요.')
   }
 }
 
