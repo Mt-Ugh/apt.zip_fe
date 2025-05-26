@@ -49,8 +49,8 @@ const toggleMenu = () => {
   isMenuVisible.value = !isMenuVisible.value
 }
 
-const handleLogout = () => {
-  signout()
+const handleLogout = async () => {
+  await signout()
   userStore.logout()
   toggleMenu()
   router.push('/')
