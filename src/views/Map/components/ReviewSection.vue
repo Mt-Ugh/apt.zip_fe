@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import CommonModal from '@/components/common/CommonModal.vue'
 import { fetchDongReviewList, registReview } from '@/api/Review'
 import { useUserStore } from '@/stores/user'
@@ -78,7 +78,14 @@ async function fetchReview(dongCode) {
   reviews.value = result
 }
 
-onMounted(async () => {
+watch(
+  () => dongCode,
+  (newCode) => {
+    fetchReview(newCode)
+  },
+)
+
+onMounted(() => {
   fetchReview(dongCode)
 })
 </script>
