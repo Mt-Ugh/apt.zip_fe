@@ -77,13 +77,13 @@ const handleLogout = () => {
 
 #header > .logo {
   position: absolute;
-  top: 3.5px;
   left: 0.8em;
   display: flex;
   align-items: center;
 }
 
 #header .logo img {
+  margin-top: 3.5px;
   height: 4.25rem;
   max-height: 100%;
   object-fit: contain;
@@ -93,6 +93,7 @@ const handleLogout = () => {
   color: #fff;
   text-decoration: none;
   font-size: 1.25em;
+  height: 4.2rem;
 }
 
 #header > .logo a:hover {
