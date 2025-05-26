@@ -29,7 +29,10 @@ instance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${accessToken}`
     }
 
-    if (config.data && typeof config.data === 'object') {
+    // FormData인 경우 Content-Type을 자동으로 설정
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    } else if (config.data && typeof config.data === 'object') {
       // snakeCase로 변환
       config.data = snakecaseKeys(config.data, { deep: true })
     }
