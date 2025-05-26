@@ -2,7 +2,7 @@
   <div id="app">
     <Header :isHome="isHomePage" />
     <router-view />
-    <ChatBot /> 
+    <ChatBot />
     <Footer />
   </div>
 </template>
@@ -13,7 +13,7 @@ import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import Header from '@/components/layout/Header.vue'
 import Footer from '@/components/layout/Footer.vue'
-import ChatBot from '@/components/layout/Chatbot.vue'; 
+import ChatBot from '@/components/layout/ChatBot.vue'
 
 const route = useRoute()
 const isHomePage = computed(() => route.path === '/')
