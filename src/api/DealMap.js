@@ -29,3 +29,19 @@ export const fetchAptDetail = async (aptSeq) => {
   const res = await axios.get('/dealMap/detail', { params: { aptSeq } })
   return res.data
 }
+
+export const registInterestDeal = async (payload) => {
+  try {
+    const res = await axios.post('/interestSale/regist', payload)
+    if (res.status === 201) {
+      return true
+    } else {
+      throw new Error('등록 실패')
+    }
+  } catch (err) {
+    if (err.response && err.response.status === 409) {
+      return { status: 409 }
+    }
+    throw err
+  }
+}
