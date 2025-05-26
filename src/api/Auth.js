@@ -16,6 +16,11 @@ export const signup = async (email, password, name, nickname, phoneNumber) => {
   return res.data
 }
 
+export const signout = async () => {
+  const res = await axios.post('/auth/signout')
+  return res.data
+}
+
 export const getGoogleLoginUrl = () => {
   return import.meta.env.VITE_API_BASE_URL + '/oauth2/authorization/google'
 }

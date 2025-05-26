@@ -1,0 +1,47 @@
+import axios from './http'
+
+export const fetchSidoList = async () => {
+  const res = await axios.get('/dealMap/sidoList')
+  return res.data
+}
+
+export const fetchGugunList = async (sidoName) => {
+  const res = await axios.get('/dealMap/gugunList', { params: { sidoName } })
+  return res.data
+}
+
+export const fetchDongList = async (sidoName, gugunName) => {
+  const res = await axios.get('/dealMap/dongList', { params: { sidoName, gugunName } })
+  return res.data
+}
+
+export const fetchAptList = async (dongCode, aptNm) => {
+  const params = { dongCode }
+  if (aptNm || aptNm.length > 0) {
+    params.aptNm = aptNm
+  }
+
+  const res = await axios.get('/dealMap/list', { params })
+  return res.data
+}
+
+export const fetchAptDetail = async (aptSeq) => {
+  const res = await axios.get('/dealMap/detail', { params: { aptSeq } })
+  return res.data
+}
+
+export const registInterestDeal = async (payload) => {
+  try {
+    const res = await axios.post('/interestSale/regist', payload)
+    if (res.status === 201) {
+      return true
+    } else {
+      throw new Error('등록 실패')
+    }
+  } catch (err) {
+    if (err.response && err.response.status === 409) {
+      return { status: 409 }
+    }
+    throw err
+  }
+}
