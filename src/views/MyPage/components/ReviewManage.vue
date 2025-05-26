@@ -12,11 +12,7 @@
           <div class="review-col date">작성일</div>
           <div class="review-col action"></div>
         </div>
-        <div
-          class="review-row"
-          v-for="(review, idx) in paginatedReviews"
-          :key="review.reviewUuid"
-        >
+        <div class="review-row" v-for="(review, idx) in paginatedReviews" :key="review.reviewUuid">
           <div class="review-col area">{{ review.dongName }}</div>
           <div class="review-col contents">{{ review.content }}</div>
           <div class="review-col date">{{ formatDate(review.createdAt) }}</div>
@@ -135,6 +131,12 @@ function onCancelDelete() {
 async function fetchReviews() {
   const result = await fetchReviewList()
   reviews.value = result
+}
+
+function changePage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
 }
 
 onMounted(async () => {
@@ -279,8 +281,8 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 0; 
-  margin-bottom: 100px; 
+  margin-top: 0;
+  margin-bottom: 100px;
   gap: 5px;
 }
 .page-btn {
@@ -289,9 +291,11 @@ onMounted(async () => {
   border-radius: 4px;
   padding: 8px 12px;
   margin: 0 4px;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 .page-btn.active {
   background: #007bff;

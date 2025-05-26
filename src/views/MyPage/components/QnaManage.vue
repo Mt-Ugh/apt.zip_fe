@@ -1,7 +1,7 @@
 <template>
   <form class="profile-content profile-content-fixed-height qna-manage-form" @submit.prevent>
     <div class="profile-header">
-      <h2 class="profile-title">QnA 관리</h2>
+      <h2 class="profile-title">Q&A 관리</h2>
       <div class="profile-title-underline"></div>
     </div>
     <div class="qna-list-area">
@@ -12,11 +12,7 @@
           <div class="qna-col date">작성일</div>
           <div class="qna-col action"></div>
         </div>
-        <div
-          class="qna-row"
-          v-for="(qna, idx) in paginatedQnas"
-          :key="qna.qnaUuid"
-        >
+        <div class="qna-row" v-for="(qna, idx) in paginatedQnas" :key="qna.qnaUuid">
           <div class="qna-col category">{{ getCategoryLabel(qna.category) }}</div>
           <div class="qna-col title">{{ qna.title }}</div>
           <div class="qna-col date">{{ formatDate(qna.createdAt) }}</div>
@@ -205,7 +201,7 @@ onMounted(async () => {
 }
 .qna-row {
   display: flex;
-  flex-direction: row; 
+  flex-direction: row;
   align-items: center;
   border-bottom: 1px solid #f2f2f2;
   padding: 0 10px;
@@ -293,29 +289,35 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 0; 
-  margin-bottom: 100px; 
+  margin-top: 0;
+  margin-bottom: 100px;
   gap: 5px;
 }
 .page-btn {
-  padding: 5px 10px;
-  border: 1px solid #ddd;
-  background: #fff;
-  cursor: pointer;
+  background: #f0f0f0;
+  border: 1px solid #d0d0d0;
   border-radius: 4px;
-  transition: background 0.2s;
+  padding: 8px 12px;
+  margin: 0 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 .page-btn.active {
   background: #007bff;
   color: #fff;
-  font-weight: bold;
+  border-color: #007bff;
 }
 .page-btn:disabled {
-  background: #f5f5f5;
-  color: #ccc;
+  background: #e9ecef;
+  color: #6c757d;
+  border-color: #dee2e6;
   cursor: not-allowed;
 }
 .page-btn:hover:not(:disabled) {
-  background: #e9ecef;
+  background: #e2e6ea;
+  transform: translateY(-1px);
 }
 </style>
