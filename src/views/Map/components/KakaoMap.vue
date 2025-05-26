@@ -756,7 +756,6 @@ onMounted(() => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   position: relative;
-  /* 오른쪽 하단에 세로로 배치 - 지도 타입 컨트롤 아래쪽에 위치 */
 }
 
 .zoom_btn_small {

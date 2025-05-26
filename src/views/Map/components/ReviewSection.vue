@@ -1,7 +1,7 @@
 <template>
   <div class="review">
     <div class="review-input">
-      <textarea v-model="content" placeholder="동에 대한 후기를 남겨보세요" />
+      <textarea v-model="content" placeholder="동에 대한 후기를 남겨보세요"></textarea>
       <button @click="submit">등록</button>
     </div>
     <ul>
@@ -177,6 +177,7 @@ ul {
   padding: 0;
   margin-top: 12px;
 }
+
 li {
   background: #f9f9f9;
   border: 1px solid #ddd;
