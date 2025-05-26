@@ -6,7 +6,7 @@
     </div>
     <ul>
       <li v-for="review in reviews" :key="review.reviewUuid" class="review-item">
-        <img :src="review.profileUrl" alt="profile" class="review-avatar" />
+        <img :src="review.profileUrl || DefaultProfile" alt="profile" class="review-avatar" />
         <div class="review-content">
           <div class="review-meta">
             <span class="nickname">{{ review.nickname }}</span>
@@ -31,6 +31,7 @@ import { onMounted, ref, watch } from 'vue'
 import CommonModal from '@/components/common/CommonModal.vue'
 import { fetchDongReviewList, registReview } from '@/api/Review'
 import { useUserStore } from '@/stores/user'
+import DefaultProfile from '@/assets/images/Common/DefaultProfile.svg'
 
 const { dongCode } = defineProps({ dongCode: String })
 const userStore = useUserStore()
