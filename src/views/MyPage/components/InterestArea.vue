@@ -4,19 +4,14 @@
     <div v-if="mainLocation" class="interest-area-grid">
       <div class="main-location">
         <div class="main-location-img-wrap">
-          <img
-            :src="mainLocation.areaUrl"
-            alt="area image"
-            class="main-location-img"
-          />
+          <img :src="mainLocation.areaUrl" alt="area image" class="main-location-img" />
           <div class="main-location-star" @click="confirmUnstar(mainLocation)">
-            <span class="material-symbols-outlined star-icon star-filled">star</span>          
+            <span class="material-symbols-outlined star-icon star-filled">star</span>
           </div>
         </div>
         <div class="main-location-desc">
           <h3 class="main-location-name">{{ mainLocation.areaName }}</h3>
           <p class="main-location-text" v-html="mainLocation.explain"></p>
-          <button class="main-location-map-btn">지도 보기</button>
         </div>
       </div>
       <div class="other-locations">
@@ -27,20 +22,16 @@
           @click="swapLocation(idx)"
         >
           <div class="other-location-img-wrap">
-            <img
-              :src="loc.areaUrl"
-              alt="area image"
-              class="other-location-img"
-            />
+            <img :src="loc.areaUrl" alt="area image" class="other-location-img" />
             <div class="other-location-star" @click.stop="confirmUnstar(loc, idx)">
-              <span class="material-symbols-outlined star-icon star-filled">star</span>   
+              <span class="material-symbols-outlined star-icon star-filled">star</span>
             </div>
           </div>
           <h3 class="other-location-name">{{ loc.areaName }}</h3>
         </div>
       </div>
     </div>
-    <div v-else style="padding: 48px 0; text-align: center; color: #aaa;">
+    <div v-else style="padding: 48px 0; text-align: center; color: #aaa">
       등록된 관심 지역이 없습니다.
     </div>
     <ConfirmModal
@@ -121,7 +112,9 @@ onMounted(fetchInterestAreas)
   padding: 16px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
-  box-shadow: 0 4px 24px 0 rgba(30,40,60,0.10), 0 1.5px 4px 0 rgba(30,40,60,0.04);
+  box-shadow:
+    0 4px 24px 0 rgba(30, 40, 60, 0.1),
+    0 1.5px 4px 0 rgba(30, 40, 60, 0.04);
   border-radius: 18px;
 }
 .interest-area-title {
@@ -145,12 +138,12 @@ onMounted(fetchInterestAreas)
   grid-column: span 12;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 4px 16px rgba(30,40,60,0.06);
+  box-shadow: 0 4px 16px rgba(30, 40, 60, 0.06);
   padding: 0 0 24px 0;
   margin-bottom: 32px;
   display: flex;
   flex-direction: column;
-  min-height: 680px; 
+  min-height: 680px;
   min-width: 40rem;
 }
 @media (min-width: 1024px) {
@@ -163,7 +156,7 @@ onMounted(fetchInterestAreas)
   position: relative;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(30,40,60,0.10);
+  box-shadow: 0 2px 8px rgba(30, 40, 60, 0.1);
 }
 .main-location-img {
   width: 100%;
@@ -178,11 +171,14 @@ onMounted(fetchInterestAreas)
   top: 8px;
   right: 8px;
   color: #facc15;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   padding: 4px;
   cursor: pointer;
-  transition: color 0.2s, background 0.2s, transform 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    transform 0.2s;
 }
 .main-location-star:hover {
   color: #fde047;
@@ -194,12 +190,16 @@ onMounted(fetchInterestAreas)
   vertical-align: middle;
 }
 .star-filled {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 .main-location-desc {
   margin-top: 16px;
   padding: 0 8px;
-  min-height: 180px; 
+  min-height: 180px;
 }
 .main-location-name {
   font-size: 20px;
@@ -210,20 +210,6 @@ onMounted(fetchInterestAreas)
   margin-top: 8px;
   color: #374151;
   line-height: 1.625;
-}
-.main-location-map-btn {
-  margin-top: 16px;
-  background: #222;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  font-weight: 500;
-  transition: background 0.2s;
-  cursor: pointer;
-}
-.main-location-map-btn:hover {
-  background: #444;
 }
 .other-locations {
   grid-column: span 12;
@@ -242,13 +228,15 @@ onMounted(fetchInterestAreas)
 .other-location {
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 2px 8px rgba(30,40,60,0.08);
+  box-shadow: 0 2px 8px rgba(30, 40, 60, 0.08);
   overflow: hidden;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
   cursor: pointer;
 }
 .other-location:hover {
-  box-shadow: 0 6px 24px rgba(30,40,60,0.13);
+  box-shadow: 0 6px 24px rgba(30, 40, 60, 0.13);
   transform: translateY(-2px) scale(1.03);
 }
 .other-location-img-wrap {
@@ -268,11 +256,14 @@ onMounted(fetchInterestAreas)
   top: 8px;
   right: 8px;
   color: #facc15;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   padding: 4px;
   cursor: pointer;
-  transition: color 0.2s, background 0.2s, transform 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    transform 0.2s;
 }
 .other-location-star:hover {
   color: #fde047;

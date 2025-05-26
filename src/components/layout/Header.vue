@@ -14,7 +14,7 @@
       <li><RouterLink to="/about" @click="toggleMenu">About Us</RouterLink></li>
       <li><RouterLink to="/map" @click="toggleMenu">실거래 검색</RouterLink></li>
       <li><RouterLink to="/news" @click="toggleMenu">부동산 뉴스</RouterLink></li>
-      <li><RouterLink to="/qna" @click="toggleMenu">QnA</RouterLink></li>
+      <li><RouterLink to="/qna" @click="toggleMenu">Q&A</RouterLink></li>
       <li><RouterLink to="/mypage" @click="toggleMenu">MyPage</RouterLink></li>
       <li><RouterLink to="/interestDeal" @click="toggleMenu">관심매물</RouterLink></li>
       <li v-if="userStore.isLoggedIn">
