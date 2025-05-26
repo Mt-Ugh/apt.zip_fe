@@ -1,7 +1,7 @@
 <template>
   <div class="aboutus-partner-section">
     <div class="aboutus-partner-inner">
-      <h2 class="aboutus-partner-title">APT ZIP 와 함께하는 파트너</h2>
+      <h2 class="aboutus-partner-title">APT.ZIP 와 함께하는 파트너</h2>
       <div class="aboutus-partner-grid">
         <div class="aboutus-partner-card">
           <div class="aboutus-partner-icon">
@@ -9,10 +9,10 @@
           </div>
           <div class="aboutus-partner-name">부동산 거래 플랫폼</div>
           <div class="aboutus-partner-desc">
-            정확하고 신뢰할 수 있는 <br> 
-            실거래 정보를 제공하여<br>
-            부동산 거래의 투명성을 높이고,<br>
-            사용자들에게 올바른 <br>
+            정확하고 신뢰할 수 있는 <br />
+            실거래 정보를 제공하여<br />
+            부동산 거래의 투명성을 높이고,<br />
+            사용자들에게 올바른 <br />
             의사결정을 지원합니다.
           </div>
         </div>
@@ -22,8 +22,8 @@
           </div>
           <div class="aboutus-partner-name">지역별 거래 분석</div>
           <div class="aboutus-partner-desc">
-            지역별 실거래 데이터를 기반으로<br>
-            시장 동향을 분석하여 사용자들에게<br>
+            지역별 실거래 데이터를 기반으로<br />
+            시장 동향을 분석하여 사용자들에게<br />
             유용한 정보를 제공합니다.
           </div>
         </div>
@@ -33,8 +33,8 @@
           </div>
           <div class="aboutus-partner-name">전문가 네트워크</div>
           <div class="aboutus-partner-desc">
-            부동산 전문가와의 협력을 통해<br>
-            신뢰할 수 있는 정보를 제공하며,<br>
+            부동산 전문가와의 협력을 통해<br />
+            신뢰할 수 있는 정보를 제공하며,<br />
             거래의 안전성을 보장합니다.
           </div>
         </div>
@@ -44,14 +44,18 @@
           </div>
           <div class="aboutus-partner-name">맞춤형 서비스</div>
           <div class="aboutus-partner-desc">
-            사용자 맞춤형 데이터를 제공하여<br>
-            부동산 거래 편리함을 극대화하며,<br>
+            사용자 맞춤형 데이터를 제공하여<br />
+            부동산 거래 편리함을 극대화하며,<br />
             효율적인 거래를 지원합니다.
           </div>
         </div>
       </div>
       <div class="aboutus-partner-divider-img">
-        <img :src="AboutUsImg3" alt="Real estate transactions" class="aboutus-partner-img-transparent">
+        <img
+          :src="AboutUsImg3"
+          alt="Real estate transactions"
+          class="aboutus-partner-img-transparent"
+        />
         <div class="aboutus-partner-bottomtext">
           <p>
             <span>신뢰할 수 있는 </span>
@@ -66,7 +70,7 @@
       </div>
       <div class="aboutus-partner-wavy" style="background-color: #d3cfc3">
         <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-          <path d="M0,40 C480,120 960,-40 1440,40 V120 H0 Z" fill="#e4e4e2"/>
+          <path d="M0,40 C480,120 960,-40 1440,40 V120 H0 Z" fill="#e4e4e2" />
         </svg>
       </div>
     </div>
@@ -74,7 +78,7 @@
 </template>
 
 <script setup>
-import AboutUsImg3 from '@/assets/images/AboutUs/AboutUsImg3.avif';
+import AboutUsImg3 from '@/assets/images/AboutUs/AboutUsImg3.avif'
 </script>
 
 <style scoped>
@@ -163,7 +167,7 @@ import AboutUsImg3 from '@/assets/images/AboutUs/AboutUsImg3.avif';
 }
 .aboutus-partner-divider-img {
   width: 100%;
-  height: 500px; 
+  height: 500px;
   margin: 32px 0 0 0;
   position: relative;
   overflow: hidden;
@@ -171,11 +175,11 @@ import AboutUsImg3 from '@/assets/images/AboutUs/AboutUsImg3.avif';
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 180px
+  margin-top: 180px;
 }
 .aboutus-partner-img-transparent {
   width: 100%;
-  height: 500px; 
+  height: 500px;
   object-fit: cover;
   object-position: center 45%;
   display: block;
@@ -184,9 +188,9 @@ import AboutUsImg3 from '@/assets/images/AboutUs/AboutUsImg3.avif';
 }
 .aboutus-partner-bottomtext {
   position: absolute;
-  left: 50%; 
+  left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%); 
+  transform: translate(-50%, -50%);
   text-align: center;
   font-size: 1.6rem;
   color: #fff;

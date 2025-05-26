@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import AboutUsHeadLine from '@/assets/images/AboutUs/AboutUsHeadLine.avif'; 
+import AboutUsHeadLine from '@/assets/images/AboutUs/AboutUsHeadLine.avif'
 </script>
 
 <style scoped>
@@ -23,7 +23,7 @@ import AboutUsHeadLine from '@/assets/images/AboutUs/AboutUsHeadLine.avif';
 
 .aboutus-hero-img {
   width: 100%;
-  height: 40vh; 
+  height: 40vh;
   object-fit: cover;
   object-position: center;
   display: block;
@@ -38,14 +38,16 @@ import AboutUsHeadLine from '@/assets/images/AboutUs/AboutUsHeadLine.avif';
   max-width: 700px;
   background: #fff;
   padding: 16px 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
 }
 
 .aboutus-title {
   text-align: center;
   font-size: 24px;
-  font-weight: 600; 
+  font-weight: 600;
   margin: 0;
 }
 </style>
