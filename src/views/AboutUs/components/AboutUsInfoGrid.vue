@@ -9,7 +9,7 @@
     </div>
     <div class="aboutus-info-card">
       <div class="aboutus-icon">
-        <img :src="SsafyLogo" alt="ssafy logo">
+        <img :src="SsafyLogo" alt="ssafy logo" />
       </div>
       <p class="aboutus-label">운영</p>
       <p class="aboutus-value">SSAFY</p>
@@ -25,14 +25,14 @@
       <div class="aboutus-icon">
         <span class="material-symbols-outlined">groups</span>
       </div>
-      <p class="aboutus-label">개발자 수</p>
+      <p class="aboutus-label">개발 인원</p>
       <p class="aboutus-value">2명</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import SsafyLogo from '@/assets/images/AboutUs/SsafyLogo.png';
+import SsafyLogo from '@/assets/images/AboutUs/SsafyLogo.png'
 </script>
 
 <style scoped>
@@ -84,7 +84,7 @@ import SsafyLogo from '@/assets/images/AboutUs/SsafyLogo.png';
 }
 .aboutus-icon img {
   width: 100px;
-  height: 60px;
+  height: 41px;
   object-fit: contain;
   display: block;
 }

@@ -6,40 +6,40 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const leftHeadline = ref(null);
-const rightHeadline = ref(null);
+const leftHeadline = ref(null)
+const rightHeadline = ref(null)
 
 function handleMergeHeadlineScroll() {
-  const section = document.querySelector('.aboutus-merge-headline-section');
-  if (!section) return;
-  const rect = section.getBoundingClientRect();
-  const windowHeight = window.innerHeight;
-  let progress = 0;
+  const section = document.querySelector('.aboutus-merge-headline-section')
+  if (!section) return
+  const rect = section.getBoundingClientRect()
+  const windowHeight = window.innerHeight
+  let progress = 0
   if (rect.top < windowHeight && rect.bottom > 0) {
-    progress = Math.min(1, Math.max(0, 1 - rect.top / (windowHeight * 0.6)));
+    progress = Math.min(1, Math.max(0, 1 - rect.top / (windowHeight * 0.6)))
   }
   if (leftHeadline.value && rightHeadline.value) {
-    leftHeadline.value.style.left = '30%';
-    leftHeadline.value.style.transform = `translate(-100%, -50%) translateX(${progress * 100}%)`;
-    rightHeadline.value.style.left = '60%';
-    rightHeadline.value.style.right = 'auto';
-    rightHeadline.value.style.transform = `translate(100%, -50%) translateX(-${progress * 100}%)`;
-    leftHeadline.value.style.opacity = progress > 0.05 ? 1 : 0;
-    rightHeadline.value.style.opacity = progress > 0.05 ? 1 : 0;
+    leftHeadline.value.style.left = '30%'
+    leftHeadline.value.style.transform = `translate(-100%, -50%) translateX(${progress * 100}%)`
+    rightHeadline.value.style.left = '60%'
+    rightHeadline.value.style.right = 'auto'
+    rightHeadline.value.style.transform = `translate(100%, -50%) translateX(-${progress * 100}%)`
+    leftHeadline.value.style.opacity = progress > 0.05 ? 1 : 0
+    rightHeadline.value.style.opacity = progress > 0.05 ? 1 : 0
   }
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleMergeHeadlineScroll, { passive: true });
-  window.addEventListener('resize', handleMergeHeadlineScroll);
-  handleMergeHeadlineScroll();
-});
+  window.addEventListener('scroll', handleMergeHeadlineScroll, { passive: true })
+  window.addEventListener('resize', handleMergeHeadlineScroll)
+  handleMergeHeadlineScroll()
+})
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleMergeHeadlineScroll);
-  window.removeEventListener('resize', handleMergeHeadlineScroll);
-});
+  window.removeEventListener('scroll', handleMergeHeadlineScroll)
+  window.removeEventListener('resize', handleMergeHeadlineScroll)
+})
 </script>
 
 <style scoped>
@@ -67,7 +67,10 @@ onBeforeUnmount(() => {
   font-weight: 700;
   color: #a89352;
   letter-spacing: 2px;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s, left 0s;
+  transition:
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s,
+    left 0s;
   opacity: 0;
   white-space: nowrap;
   pointer-events: none;

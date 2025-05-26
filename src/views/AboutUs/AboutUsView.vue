@@ -14,77 +14,75 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
-import AboutUsHero from '@/views/AboutUs/components/AboutUsHero.vue';
-import AboutUsInfoGrid from '@/views/AboutUs/components/AboutUsInfoGrid.vue';
-import AboutUsHeadlineDesc from '@/views/AboutUs/components/AboutUsHeadlineDesc.vue';
-import AboutUsMergeHeadlineSection from '@/views/AboutUs/components/AboutUsMergeHeadlineSection.vue';
-import AboutUsTransparentSection from '@/views/AboutUs/components/AboutUsTransparentSection.vue';
-import AboutUsPartnerSection from '@/views/AboutUs/components/AboutUsPartnerSection.vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue'
+import AboutUsHero from '@/views/AboutUs/components/AboutUsHero.vue'
+import AboutUsInfoGrid from '@/views/AboutUs/components/AboutUsInfoGrid.vue'
+import AboutUsHeadlineDesc from '@/views/AboutUs/components/AboutUsHeadlineDesc.vue'
+import AboutUsMergeHeadlineSection from '@/views/AboutUs/components/AboutUsMergeHeadlineSection.vue'
+import AboutUsTransparentSection from '@/views/AboutUs/components/AboutUsTransparentSection.vue'
+import AboutUsPartnerSection from '@/views/AboutUs/components/AboutUsPartnerSection.vue'
 
 function handleParallax() {
-  const imgs = [
-    ...document.querySelectorAll('.aboutus-transparent-img2-centered img')
-  ];
+  const imgs = [...document.querySelectorAll('.aboutus-transparent-img2-centered img')]
   if (aboutUsImg2.value && !imgs.includes(aboutUsImg2.value)) {
-    imgs.push(aboutUsImg2.value);
+    imgs.push(aboutUsImg2.value)
   }
-  const scrollY = window.scrollY || window.pageYOffset;
-  imgs.forEach(img => {
-    const rect = img.getBoundingClientRect();
-    const imgTop = rect.top + scrollY;
-    const windowHeight = window.innerHeight;
-    const imgHeight = rect.height;
-    const windowCenter = scrollY + windowHeight / 2;
-    const offset = (imgTop + imgHeight / 2) - windowCenter;
-    let base = 80;
-    let strength = 0.09;
-    let pos = base + offset * strength;
-    pos = Math.max(0, Math.min(100, pos));
-    img.style.objectPosition = `center ${pos}%`;
-  });
+  const scrollY = window.scrollY || window.pageYOffset
+  imgs.forEach((img) => {
+    const rect = img.getBoundingClientRect()
+    const imgTop = rect.top + scrollY
+    const windowHeight = window.innerHeight
+    const imgHeight = rect.height
+    const windowCenter = scrollY + windowHeight / 2
+    const offset = imgTop + imgHeight / 2 - windowCenter
+    let base = 80
+    let strength = 0.09
+    let pos = base + offset * strength
+    pos = Math.max(0, Math.min(100, pos))
+    img.style.objectPosition = `center ${pos}%`
+  })
 }
 
-const leftHeadline = ref(null);
-const rightHeadline = ref(null);
-const aboutUsImg2 = ref(null);
+const leftHeadline = ref(null)
+const rightHeadline = ref(null)
+const aboutUsImg2 = ref(null)
 
 function handleMergeHeadlineScroll() {
-  const section = document.querySelector('.aboutus-merge-headline-section');
-  if (!section) return;
-  const rect = section.getBoundingClientRect();
-  const windowHeight = window.innerHeight;
-  let progress = 0;
+  const section = document.querySelector('.aboutus-merge-headline-section')
+  if (!section) return
+  const rect = section.getBoundingClientRect()
+  const windowHeight = window.innerHeight
+  let progress = 0
   if (rect.top < windowHeight && rect.bottom > 0) {
-    progress = Math.min(1, Math.max(0, 1 - rect.top / (windowHeight * 0.6)));
+    progress = Math.min(1, Math.max(0, 1 - rect.top / (windowHeight * 0.6)))
   }
   if (leftHeadline.value && rightHeadline.value) {
-    leftHeadline.value.style.left = '30%';
-    leftHeadline.value.style.transform = `translate(-100%, -50%) translateX(${progress * 100}%)`;
-    rightHeadline.value.style.left = '60%';
-    rightHeadline.value.style.transform = `translate(100%, -50%) translateX(-${progress * 100}%)`;
-    leftHeadline.value.style.opacity = progress > 0.05 ? 1 : 0;
-    rightHeadline.value.style.opacity = progress > 0.05 ? 1 : 0;
+    leftHeadline.value.style.left = '30%'
+    leftHeadline.value.style.transform = `translate(-100%, -50%) translateX(${progress * 100}%)`
+    rightHeadline.value.style.left = '60%'
+    rightHeadline.value.style.transform = `translate(100%, -50%) translateX(-${progress * 100}%)`
+    leftHeadline.value.style.opacity = progress > 0.05 ? 1 : 0
+    rightHeadline.value.style.opacity = progress > 0.05 ? 1 : 0
   }
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleParallax, { passive: true });
-  window.addEventListener('resize', handleParallax);
-  handleParallax();
+  window.addEventListener('scroll', handleParallax, { passive: true })
+  window.addEventListener('resize', handleParallax)
+  handleParallax()
 
-  window.addEventListener('scroll', handleMergeHeadlineScroll, { passive: true });
-  window.addEventListener('resize', handleMergeHeadlineScroll);
-  handleMergeHeadlineScroll();
-});
+  window.addEventListener('scroll', handleMergeHeadlineScroll, { passive: true })
+  window.addEventListener('resize', handleMergeHeadlineScroll)
+  handleMergeHeadlineScroll()
+})
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleParallax);
-  window.removeEventListener('resize', handleParallax);
+  window.removeEventListener('scroll', handleParallax)
+  window.removeEventListener('resize', handleParallax)
 
-  window.removeEventListener('scroll', handleMergeHeadlineScroll);
-  window.removeEventListener('resize', handleMergeHeadlineScroll);
-});
+  window.removeEventListener('scroll', handleMergeHeadlineScroll)
+  window.removeEventListener('resize', handleMergeHeadlineScroll)
+})
 </script>
 
 <style>
