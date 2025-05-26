@@ -2,11 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AuthView from '@/views/Auth/AuthView.vue'
 import AuthCallback from '@/views/Auth/AuthCallback.vue'
 import HomeView from '@/views/Home/HomeView.vue'
+import InterestDeal from '@/views/InterestDeal/InterestDealView.vue'
 import QnAView from '@/views/QnA/QnAView.vue'
 import QnADetail from '@/views/QnA/QnADetail.vue'
 import QnARegist from '@/views/QnA/QnARegist.vue'
 import NewsView from '@/views/News/NewsView.vue'
 import AboutUs from '@/views/AboutUs/AboutUsView.vue'
+import MyPageView from '@/views/MyPage/MyPageView.vue'
 
 const routes = [
   {
@@ -25,6 +27,10 @@ const routes = [
     component: HomeView,
   },
   {
+    path: '/interestDeal',
+    name: 'InterestDeal',
+    component: InterestDeal,
+  },
     path: '/qna',
     name: 'QnAView',
     component: QnAView,
@@ -39,7 +45,8 @@ const routes = [
     name: 'QnARegist',
     component: QnARegist,
   },
-  {path: '/news',
+  {
+    path: '/news',
     name: 'NewsView',
     component: NewsView,
   },
@@ -47,7 +54,12 @@ const routes = [
     path: '/about',
     name: 'AboutUs',
     component: AboutUs,
-  }
+  },
+  {
+    path: '/myPage',
+    name: 'MyPageView',
+    component: MyPageView,
+  },
 ]
 
 const router = createRouter({
