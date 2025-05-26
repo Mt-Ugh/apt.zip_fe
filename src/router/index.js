@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AuthView from '@/views/Auth/AuthView.vue'
 import AuthCallback from '@/views/Auth/AuthCallback.vue'
 import HomeView from '@/views/Home/HomeView.vue'
+import InterestDeal from '@/views/InterestDeal/InterestDealView.vue'
 import QnAView from '@/views/QnA/QnAView.vue'
 import QnADetail from '@/views/QnA/QnADetail.vue'
 import QnARegist from '@/views/QnA/QnARegist.vue'
@@ -24,6 +25,10 @@ const routes = [
     component: HomeView,
   },
   {
+    path: '/interestDeal',
+    name: 'InterestDeal',
+    component: InterestDeal,
+  },
     path: '/qna',
     name: 'QnAView',
     component: QnAView,
