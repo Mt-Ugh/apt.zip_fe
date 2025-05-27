@@ -6,6 +6,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    __VITE_API_URL__: JSON.stringify(process.env.VITE_API_BASE_URL),
+  },
   plugins: [
     vue(),
     vueDevTools(),
