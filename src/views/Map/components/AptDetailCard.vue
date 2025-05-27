@@ -59,6 +59,10 @@
       </div>
     </div>
 
+    <div class="chart-container">
+      <canvas id="dealChart"></canvas>
+    </div>
+
     <hr class="divider" />
     <h4>거래 내역</h4>
     <div class="table-section">
@@ -98,7 +102,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { fetchAptDetail } from '@/api/DealMap'
 import Pin from '@/assets/images/Map/Pin.svg'
 import Tool from '@/assets/images/Map/Tool.svg'
@@ -108,10 +112,30 @@ import CommonModal from '@/components/common/CommonModal.vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useUserStore } from '@/stores/user'
 import { registInterestDeal } from '@/api/DealMap'
+import { Chart, registerables } from 'chart.js'
+
+Chart.register(...registerables)
+
+const props = defineProps({
+  aptSeq: [String, Object],
+})
+
+const emits = defineEmits(['close'])
 
 const mapStore = useMapStore()
 const userStore = useUserStore()
-const aptDetail = ref({})
+const aptDetail = ref({
+  aptNm: '',
+  sidoName: '',
+  gugunName: '',
+  dongName: '',
+  jibun: '',
+  maxAmount: 0,
+  minAmount: 0,
+  totalDeal: 0,
+  buildYear: 0,
+  dealList: [],
+})
 
 const showModal = ref(false)
 const modalTitle = ref('')
@@ -192,12 +216,152 @@ async function addInterestDeal(item) {
     showModalError('등록 실패', '로그인을 해주세요')
   }
 }
+
+let dealChart = null
+
+onMounted(() => {
+  if (mapStore.selectedApt && mapStore.selectedApt.aptSeq) {
+    fetchAptDetail(mapStore.selectedApt.aptSeq).then((result) => {
+      result.dealList.sort(
+        (a, b) =>
+          new Date(a.dealYear, a.dealMonth - 1, a.dealDay) -
+          new Date(b.dealYear, b.dealMonth - 1, b.dealDay),
+      )
+      aptDetail.value = result
+    })
+  }
+})
+
+watch(
+  () => aptDetail.value.dealList,
+  (newDealList) => {
+    if (newDealList && newDealList.length > 0) {
+      if (!dealChart) {
+        createChart()
+      } else {
+        updateChart(newDealList)
+      }
+    }
+  },
+)
+
+function createChart() {
+  const canvas = document.getElementById('dealChart')
+  if (!canvas) {
+    return
+  }
+
+  const ctx = canvas.getContext('2d')
+  const monthlyData = aggregateMonthlyData(aptDetail.value.dealList)
+
+  dealChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: monthlyData.map((item) => item.label),
+      datasets: [
+        {
+          label: '월별 평균 거래 금액',
+          data: monthlyData.map((item) => item.averageAmount),
+          borderColor: '#bbb8e2',
+          backgroundColor: 'rgba(187, 184, 226, 0.2)',
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            font: {
+              size: 14,
+            },
+          },
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: (context) => `₩${context.raw.toLocaleString()}만원`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: '월',
+            font: {
+              size: 14,
+            },
+          },
+          ticks: {
+            font: {
+              size: 12,
+            },
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: '평균 거래 금액 (만원)',
+            font: {
+              size: 14,
+            },
+          },
+          ticks: {
+            font: {
+              size: 12,
+            },
+          },
+        },
+      },
+    },
+  })
+}
+
+function updateChart(newDealList) {
+  const monthlyData = aggregateMonthlyData(newDealList)
+  dealChart.data.labels = monthlyData.map((item) => item.label)
+  dealChart.data.datasets[0].data = monthlyData.map((item) => item.averageAmount)
+  dealChart.update()
+}
+
+function aggregateMonthlyData(dealList) {
+  const monthlyMap = {}
+
+  dealList.forEach((item) => {
+    const monthKey = `${item.dealYear}-${String(item.dealMonth).padStart(2, '0')}`
+    if (!monthlyMap[monthKey]) {
+      monthlyMap[monthKey] = { totalAmount: 0, count: 0 }
+    }
+    monthlyMap[monthKey].totalAmount += item.dealAmount
+    monthlyMap[monthKey].count += 1
+  })
+
+  // 날짜 빠른 순(오래된 순)으로 정렬
+  return Object.entries(monthlyMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, data]) => ({
+      label: month,
+      averageAmount: Math.round(data.totalAmount / data.count),
+    }))
+}
 </script>
 
 <style scoped>
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 24px;
+}
+
 .detail-card {
   position: fixed;
-  top: 50%;
+  top: 53.5%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 640px;
