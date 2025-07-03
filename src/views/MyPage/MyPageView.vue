@@ -59,15 +59,15 @@ const showModalError = (title, message) => {
 }
 
 function onWithdraw() {
-  confirmTitle.value = 'QnA 삭제 확인'
-  confirmMessage.value = '정말 삭제하시겠습니까?'
+  confirmTitle.value = '회원 탈퇴 확인'
+  confirmMessage.value = '정말 탈퇴하시겠습니까?'
   confirmCallback.value = async () => {
     try {
       await deleteUser()
       showConfirmModal.value = false
       router.push('/')
     } catch {
-      showModalError('삭제 실패', 'QnA 삭제 중 오류가 발생했습니다.')
+      showModalError('삭제 실패', '회원 탈퇴 중 오류가 발생했습니다.')
     }
   }
   showConfirmModal.value = true
